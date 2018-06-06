@@ -13,7 +13,6 @@ CHtc_Vive_Tracker::~CHtc_Vive_Tracker()
 void CHtc_Vive_Tracker::InitializeDeviceMap(bool verbose){
 	int num_detected_devices = max_devices_;
 	if (verbose) std::cout<<"Detected devices:"<<std::endl;	
-	vr::TrackedPropertyError peError = vr::TrackedProp_Success;
 	std::string device_name;
 	for (int i = 0; i<num_detected_devices; ++i){
 		if (device_poses_[i].bDeviceIsConnected && device_poses_[i].bPoseIsValid){
@@ -110,6 +109,10 @@ void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 }
 
 
+std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
+	return devices_names_;
+
+}
 //Device position 
 bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name,double (&pose)[3], double (&angle)[4]){
 	if (devices_id_.find(device_name) == devices_id_.end()){

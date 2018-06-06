@@ -46,6 +46,7 @@ class CHtc_Vive_Tracker
     //Device detection
     bool IsDeviceDetected (const std::string & device_name);
     void PrintAllDetectedDevices ();
+    std::vector<std::string> GetAllDeviceNames();
 
 
     //Device position and velocity
