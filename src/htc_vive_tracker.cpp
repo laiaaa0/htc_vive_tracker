@@ -24,6 +24,7 @@ void CHtc_Vive_Tracker::InitializeDeviceMap(bool verbose){
 		}
 	}
 }
+
 // HtcViveTrackerAlgorithm Public API
 //Initialize and shutdown functionalities
 bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
@@ -88,6 +89,9 @@ void CHtc_Vive_Tracker::Update (bool verbose){
 
 //Device detection
 bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
+	if (devices_id_.find(device_name) == devices_id_.end()){
+		return false;
+	}
 	int device_index = devices_id_[device_name];
 	if (device_index < max_devices_){
 		return this->vr_system_->IsTrackedDeviceConnected(device_index);
@@ -97,7 +101,7 @@ bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
 void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 	for (vr::TrackedDeviceIndex_t device_index  = vr::k_unTrackedDeviceIndex_Hmd; device_index < max_devices_; ++device_index){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].bPoseIsValid){
-			//std::string device_class = this->GetDeviceClass(device_index);
+
 			std::string device_name = devices_names_[device_index];
 			std::string info = ("device["+std::to_string(device_index)+"]: " + device_name + " is connected");
 			std::cout<<info<<std::endl;
@@ -108,7 +112,9 @@ void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 
 //Device position 
 bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name,double (&pose)[3], double (&angle)[4]){
-	//TODO : Check that device_name is valid.	
+	if (devices_id_.find(device_name) == devices_id_.end()){
+		return false;
+	}
 	int device_index = devices_id_[device_name];
 	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
 	vr::TrackedDevicePose_t current_device_pose = device_poses_[device_index];
@@ -162,27 +168,6 @@ bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, doub
 }
 
 
-std::string CHtc_Vive_Tracker::GetDeviceName (const int device_id){
-	vr::ETrackedPropertyError err = vr::TrackedProp_Success;
-	std::string device_name;
-	vr::ETrackedDeviceProperty device_property = vr::Prop_TrackingSystemName_String;
-	char buffer[32];
-	uint32_t correct_length = this->vr_system_->GetStringTrackedDeviceProperty (device_id, device_property, buffer, sizeof(buffer), &err);
-	if (err == vr::TrackedProp_Success){
-		device_name = buffer;
-	}
-	else if (err == vr::TrackedProp_BufferTooSmall){
-		char * new_buffer = new char[correct_length];
-		
-		correct_length = this->vr_system_->GetStringTrackedDeviceProperty (device_id, device_property, new_buffer, sizeof(new_buffer), &err);
-		if (err == vr::TrackedProp_Success){
-			device_name = new_buffer;
-		}
-		delete [] new_buffer;
-	}
-	return device_name;
-
-}
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
 std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
     vr::ETrackedDeviceClass tracked_device_class = this->vr_system_ ->GetTrackedDeviceClass (device_id);
