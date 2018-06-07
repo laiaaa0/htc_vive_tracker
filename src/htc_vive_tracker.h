@@ -14,6 +14,7 @@ class CHtc_Vive_Tracker
     {
   private:
     vr::IVRSystem * vr_system_;
+    vr::IVRChaperone * vr_chaperone_;
     vr::TrackedDevicePose_t device_poses_[vr::k_unMaxTrackedDeviceCount];
     std::map<std::string,int> devices_id_;
     std::vector<std::string>devices_names_;
@@ -55,14 +56,20 @@ class CHtc_Vive_Tracker
     bool GetDeviceVelocity (const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]);
 
 
+
+    //Chaperone - related functions
+    bool GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ);
+
+
     //Auxiliar functions
 
     std::string GetDeviceName(const int device_id);
     std::string GetDeviceClass (const int device_id);
     std::string SetDeviceName (const int device_id);
 
-    void MatrixToPose(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
+    void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
+    bool UpdateDevicePosition (const int device_id);
 };
 
 #endif

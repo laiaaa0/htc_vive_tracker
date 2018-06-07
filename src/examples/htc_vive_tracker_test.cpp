@@ -10,8 +10,24 @@ int main(int argc, char *argv[])
 
 	if (vt.InitializeVR(verbose)){
 
-		std::cout<<"Init done. Detected devices are :"<<std::endl;
+		float sizeX, sizeZ;
+		std::vector<std::vector<float> > play_corners;
+		if (vt.GetChaperoneDimensions(play_corners,sizeX,sizeZ)){
+			std::cout<<"Play area corners: "<<std::endl;
+
+			for (int i=0; i<play_corners.size(); ++i){
+				std::cout<<"  ("<<play_corners[i][0]<<", "<<play_corners[i][1]<<", "<<play_corners[i][2]<<")"<<std::endl;
+			}
+			//size in meters
+			std::cout<<"Play area size : "<<std::endl<<sizeX<<" "<<sizeZ<<std::endl;
+
+
+		}
+		else {
+			std::cout<<"Could not calculate play area size"<<std::endl;
+		}
 		
+		std::cout<<"Init done. Detected devices are :"<<std::endl;
 		vt.PrintAllDetectedDevices();
 
 		std::vector<std::string> list_of_devices = vt.GetAllDeviceNames();
@@ -38,7 +54,7 @@ int main(int argc, char *argv[])
 					for (int i=0; i<3;++i) std::cout<<angular_v[i]<<" ";
 					std::cout<<std::endl<<"**************************"<<std::endl;
 				}
-			} // else std::cout<<list_of_devices[i]<<" not detected"<<std::endl;
+			} else std::cout<<list_of_devices[i]<<" not detected"<<std::endl;
 
 
 		}

@@ -47,11 +47,23 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
 			devices_names_.push_back("");
 		}
 
+		this->vr_chaperone_ = (vr::IVRChaperone *)vr::VR_GetGenericInterface(vr::IVRChaperone_Version, &er);
+		if (er == 0) {
+			if (verbose) std::cout<<"Chaperone initialized correctly"<<std::endl;
+		} else {
+			if (verbose) std::cout<<"Problem initializing chaperone"<<std::endl;
+			return false;
+		}
 		this->Update(verbose);
 	 	this->InitializeDeviceMap(verbose);
 		return true;
         }
-	else return false;
+	else {
+		if (verbose){
+			std::cout<<"Problem initializing VR"<<std::endl;
+		}
+		return false;
+	}
 
 
 	
@@ -110,7 +122,13 @@ void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 
 
 std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
-	return devices_names_;
+	std::vector<std::string> non_empty_device_names;	
+	for (int i = 0; i<devices_names_.size(); ++i){
+		if (devices_names_[i]!=""){
+			non_empty_device_names.push_back(devices_names_[i]);
+		}
+	}
+	return non_empty_device_names;
 
 }
 //Device position 
@@ -119,15 +137,22 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 		return false;
 	}
 	int device_index = devices_id_[device_name];
-	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
-	vr::TrackedDevicePose_t current_device_pose = device_poses_[device_index];
-	if (current_device_pose.bDeviceIsConnected && current_device_pose.bPoseIsValid){
+
+
+        if (this-> UpdateDevicePosition (device_index)){
+
+		//this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, this->max_devices_);
+		vr::TrackedDevicePose_t current_device_pose = this->device_poses_[device_index];
+		if (current_device_pose.bDeviceIsConnected && current_device_pose.bPoseIsValid){
 			vr::HmdMatrix34_t device_matrix = current_device_pose.mDeviceToAbsoluteTracking;
-			this->MatrixToPose(device_matrix,pose);
+			this->MatrixToPoseZVertical(device_matrix,pose);
 			this->MatrixToQuaternion(device_matrix,angle);
 			std::string info = std::to_string (current_device_pose.eTrackingResult);
 			return true;
+		}
 	}
+	
+	
 	return false;
 
 }
@@ -171,6 +196,24 @@ bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, doub
 }
 
 
+bool CHtc_Vive_Tracker::GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ){
+	
+	vr::HmdQuad_t rect;
+	std::vector<float>pose(3);
+	if(this->vr_chaperone_->GetPlayAreaSize(&pSizeX,&pSizeZ)){
+		if (this->vr_chaperone_->GetPlayAreaRect(& rect)){
+			for (int i = 0; i<4; ++i){
+				pose[0] = rect.vCorners[i].v[0];
+				pose[1] = rect.vCorners[i].v[1];
+				pose[2] = rect.vCorners[i].v[2];
+				corners.push_back(pose);
+			}
+			return true;		
+		} 	
+	}
+	return false;
+
+}
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
 std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
     vr::ETrackedDeviceClass tracked_device_class = this->vr_system_ ->GetTrackedDeviceClass (device_id);
@@ -214,10 +257,18 @@ std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 
 
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start              
-void CHtc_Vive_Tracker::MatrixToPose(const vr::HmdMatrix34_t & matrix,double (&pose)[3]){
+void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,double (&pose)[3]){
+	// matrix.m[1] is the vertical component.
+	// we want that on the third component of our pose.
+	// we also want the coordinate system to be direct-cartesian
+	/*
 	pose[0] = matrix.m[0][3];
 	pose[1] = matrix.m[1][3];
 	pose[2] = matrix.m[2][3];
+	*/
+	pose[0] = matrix.m[2][3];
+	pose[1] = matrix.m[0][3];
+	pose[2] = matrix.m[1][3];
 
 }
 void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]){
@@ -235,4 +286,21 @@ void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,doub
 	quaternion[0] = copysign(quaternion[0], matrix.m[2][1] - matrix.m[1][2]);
 	quaternion[1] = copysign(quaternion[1], matrix.m[0][2] - matrix.m[2][0]);
 	quaternion[2] = copysign(quaternion[2], matrix.m[1][0] - matrix.m[0][1]);
+}
+
+bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
+	
+	vr::ETrackedDeviceClass device_class = this->vr_system_->GetTrackedDeviceClass(device_id);
+	vr::TrackedDevicePose_t tracked_device_pose;
+	vr::VRControllerState_t controller_state;
+        this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, this->device_poses_, this->max_devices_);
+
+	if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller or device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker){
+		
+		this->vr_system_->GetControllerStateWithPose(vr::TrackingUniverseStanding, device_id, &controller_state, sizeof(controller_state), &tracked_device_pose);
+		this->device_poses_[device_id] = tracked_device_pose;
+	}
+	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
+	return true;
+
 }
