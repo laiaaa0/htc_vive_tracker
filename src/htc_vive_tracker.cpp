@@ -121,6 +121,19 @@ void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 }
 
 
+float CHtc_Vive_Tracker::GetBatteryLevel (const std::string & device_name){
+	if (devices_id_.find(device_name) == devices_id_.end()){
+		return 0;
+	}
+	float level = 1.0;
+	int device_id = devices_id_[device_name];
+	vr::ETrackedDeviceProperty device_property = vr::Prop_DeviceBatteryPercentage_Float;
+	vr::ETrackedPropertyError error;
+	if (device_id < max_devices_){
+		level = this->vr_system_->GetFloatTrackedDeviceProperty(device_id, device_property, &error);
+	}
+	return level;
+}
 std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
 	std::vector<std::string> non_empty_device_names;	
 	for (int i = 0; i<devices_names_.size(); ++i){
@@ -259,17 +272,12 @@ std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start              
 void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,double (&pose)[3]){
 	// matrix.m[1] is the vertical component.
-	// we want that on the third component of our pose.
+	// we want that on the third component of our pose. (Z is up)
 	// we also want the coordinate system to be direct-cartesian
-	/*
-	pose[0] = matrix.m[0][3];
-	pose[1] = matrix.m[1][3];
-	pose[2] = matrix.m[2][3];
-	*/
-	pose[0] = matrix.m[2][3];
-	pose[1] = matrix.m[0][3];
-	pose[2] = matrix.m[1][3];
-
+	
+	pose[0] = matrix.m[2][3]; // X
+	pose[1] = matrix.m[0][3]; // Y
+	pose[2] = matrix.m[1][3]; // Z
 }
 void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]){
 	//w

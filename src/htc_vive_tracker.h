@@ -48,6 +48,7 @@ class CHtc_Vive_Tracker
     bool IsDeviceDetected (const std::string & device_name);
     void PrintAllDetectedDevices ();
     std::vector<std::string> GetAllDeviceNames();
+    float GetBatteryLevel (const std::string & device_name);
 
 
     //Device position and velocity
