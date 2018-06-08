@@ -13,15 +13,24 @@
 class CHtc_Vive_Tracker
     {
   private:
+    //IVR System interface (main)
     vr::IVRSystem * vr_system_;
+    //IVR Chaperone (to get boundaries and size)
     vr::IVRChaperone * vr_chaperone_;
+    
+    //array that contains the positions of all the detected devices
     vr::TrackedDevicePose_t device_poses_[vr::k_unMaxTrackedDeviceCount];
+
+    //map to obtain the device id from the device string
     std::map<std::string,int> devices_id_;
+    //vector to obtain the device name from the device id
     std::vector<std::string>devices_names_;
+    // max number of devices
     int max_devices_;
     //Number of devices of each type
     int hmd_counts_=1, controller_counts_=1, tracker_counts_=1, track_reference_counts_=1, null_counts_=1;
     
+    // function to initialize the data structures (devices_names_ and devices_id)
     void InitializeDeviceMap(bool verbose);
     
     
@@ -59,14 +68,14 @@ class CHtc_Vive_Tracker
 
 
     //Chaperone - related functions
+    // Get a vector of the four corners, and the size in X and Z
     bool GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ);
 
 
     //Auxiliar functions
-
-    std::string GetDeviceName(const int device_id);
     std::string GetDeviceClass (const int device_id);
     std::string SetDeviceName (const int device_id);
+
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
