@@ -1,3 +1,5 @@
+### Readme
+
 Copyright (C) 2009-2010 Institut de Robòtica i Informàtica Industrial, CSIC-UPC.
 Author pmlab (pmlab@iri.upc.edu)
 All rights reserved.
@@ -17,3 +19,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
+### Instalation instructions
+
+* Install dependencies (OpenVR)
+
+Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
+
+
+```
+
+```
+
+* Create build folder
+
+```
+cd htc_vive_tracker
+mkdir build
+cd build
+```
+
+* Compile and install library
+
+
+```
+cmake ..
+make
+sudo make install
+```
