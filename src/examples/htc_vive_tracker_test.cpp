@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 		if (vt.GetChaperoneDimensions(play_corners,sizeX,sizeZ)){
 			std::cout<<"Play area corners: "<<std::endl;
 
-			for (int i=0; i<play_corners.size(); ++i){
+			for (uint i=0; i<play_corners.size(); ++i){
 				std::cout<<"  ("<<play_corners[i][0]<<", "<<play_corners[i][1]<<", "<<play_corners[i][2]<<")"<<std::endl;
 			}
 			//size in meters

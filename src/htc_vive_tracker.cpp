@@ -34,6 +34,9 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
         this->vr_system_ = vr::VR_Init (&er, vr::VRApplication_Background);
         std::string init_error = vr::VR_GetVRInitErrorAsSymbol(er);
 
+	//if (er == vr::VRInitError_Init_NoServerForBackgroundApp){
+	//	this->vr_system_ = vr::VR_Init (&er, vr::VRApplication_Utility);
+	//}
         if (verbose){
                 std::cout<<"VR is runtime installed : " <<runtime_ok<<std::endl;
                 std::cout<<"VR is HMD present : " <<hmd_present<<std::endl;
@@ -129,20 +132,42 @@ float CHtc_Vive_Tracker::GetBatteryLevel (const std::string & device_name){
 	int device_id = devices_id_[device_name];
 	vr::ETrackedDeviceProperty device_property = vr::Prop_DeviceBatteryPercentage_Float;
 	vr::ETrackedPropertyError error;
-	if (device_id < max_devices_){
-		level = this->vr_system_->GetFloatTrackedDeviceProperty(device_id, device_property, &error);
+	std::string device_class = this->GetDeviceClass(device_id);
+	//Only return battery if device is not connected (controller or tracker)
+	if (device_class == NAME_CONTROLLER || device_class == NAME_TRACKER){
+		if (device_id < max_devices_){
+			level = this->vr_system_->GetFloatTrackedDeviceProperty(device_id, device_property, &error);
+		}
 	}
 	return level;
 }
 std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
 	std::vector<std::string> non_empty_device_names;	
-	for (int i = 0; i<devices_names_.size(); ++i){
+	for (uint i = 0; i<devices_names_.size(); ++i){
 		if (devices_names_[i]!=""){
 			non_empty_device_names.push_back(devices_names_[i]);
 		}
 	}
 	return non_empty_device_names;
 
+}
+
+bool CHtc_Vive_Tracker::EventPolling(){
+	vr::VREvent_t event;
+	if (this->vr_system_->PollNextEvent(&event, sizeof(event))){
+		switch (event.eventType){
+			case vr::VREvent_TrackedDeviceActivated:
+				this->AddNewDevice(event.trackedDeviceIndex);
+				break;
+			case vr::VREvent_TrackedDeviceDeactivated:
+				this->DeleteDevice(event.trackedDeviceIndex);
+				break;
+			default:
+				break;
+		}
+		return true;
+	}
+	return false;
 }
 //Device position 
 bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name,double (&pose)[3], double (&angle)[4]){
@@ -242,6 +267,22 @@ std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
 	return NAME_NULL;
     } else return NAME_NULL;
 }
+
+
+bool CHtc_Vive_Tracker::AddNewDevice (const int device_id){
+	std::string name = this->SetDeviceName (device_id);
+	devices_id_[name] = device_id;
+	devices_names_[device_id] = name;
+	return true;
+}
+bool CHtc_Vive_Tracker::DeleteDevice (const int device_id){
+	std::string name = devices_names_[device_id];
+	devices_names_[device_id] = "";
+	devices_id_.erase(name);
+	//TODO : Possible improvement : decrease class counter
+	return true;
+}
+
 
 std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 	std::string class_name = this->GetDeviceClass (device_id);

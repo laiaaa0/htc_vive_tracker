@@ -58,6 +58,7 @@ class CHtc_Vive_Tracker
     void PrintAllDetectedDevices ();
     std::vector<std::string> GetAllDeviceNames();
     float GetBatteryLevel (const std::string & device_name);
+    bool EventPolling();
 
 
     //Device position and velocity
@@ -75,7 +76,8 @@ class CHtc_Vive_Tracker
     //Auxiliar functions
     std::string GetDeviceClass (const int device_id);
     std::string SetDeviceName (const int device_id);
-
+    bool AddNewDevice (const int device_id);
+    bool DeleteDevice (const int device_id);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
