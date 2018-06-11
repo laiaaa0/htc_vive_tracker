@@ -46,3 +46,7 @@ cmake ..
 make
 sudo make install
 ```
+
+### FAQ
+
+Check the [HTC_Vive_Tracker developer guidelines](https://dl.vive.com/Tracker/Guideline/HTC_Vive_Tracker(2018)_Developer+Guidelines_v1.0.pdf) for more information 
