@@ -21,16 +21,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 ### Instalation instructions
 
+* Install dependencies (SteamVR)
+
+1. Create a steam account [here](https://store.steampowered.com/join/?)
+2. Download and install Steam [here](https://store.steampowered.com/about/)
+3. Download and install SteamVR
+
+    1. Open Steam.
+    2. Go to LIBRARY>Tools
+    3. Right click SteamVR > Install
+    
+4. Edit configuration files so that it works without the headset
+
+    1. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/resources/settings/default.vrsettings ``` 
+    2. Search for the “requireHmd” key under “steamvr”, set the value of this key to “false”.
+    3. Search for the “forcedDriver” key under “steamvr”, set the value of this key to “null”.
+    4. Search for the “activateMultipleDrivers” key under “steamvr”, set the value of this key to “true”.
+5. Opt-in to SteamVR Beta.
+
+    1. Right click on SteamVR > Properties
+    2. BETAS tab > SteamVR beta update
+    
 * Install dependencies (OpenVR)
 
 Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
 
 
 ```
-
+git clone https://github.com/ValveSoftware/openvr.git
+cd openvr
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
 ```
 
-* Create build folder
+Suggestion : Also install the headers automatically
+
+1. Edit openvr/CMakeLists.txt and add the following line
+
+    add_subdirectory(headers)   
+2. Create openvr/headers/CMakeLists.txt and add the following line
+
+    install(FILES openvr_capi.h openvr_driver.h openvr.h DESTINATION include)
+
+
+* Install htc vive tracker
+
+
+Clone this repository 
 
 ```
 cd htc_vive_tracker
