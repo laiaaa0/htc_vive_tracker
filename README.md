@@ -21,6 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 ### Instalation instructions
 
+* Is your PC Ready for HTC - VIVE? 
+
+    Check it [here](https://www.vive.com/us/ready/)
+
 * Install dependencies (SteamVR)
 
 1. Create a steam account [here](https://store.steampowered.com/join/?)
