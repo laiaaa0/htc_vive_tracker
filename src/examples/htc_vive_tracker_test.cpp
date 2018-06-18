@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 				std::cout<<"  ("<<play_corners[i][0]<<", "<<play_corners[i][1]<<", "<<play_corners[i][2]<<")"<<std::endl;
 			}
 			//size in meters
-			std::cout<<"Play area size : "<<std::endl<<sizeX<<" "<<sizeZ<<std::endl;
+			std::cout<<"Play area size : "<<std::endl<<"  "<<sizeX<<" x  "<<sizeZ<<" m"<<std::endl;
 
 
 		}
@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
 		std::cout<<"Init done. Detected devices are :"<<std::endl;
 		vt.PrintAllDetectedDevices();
 
+		std::cout<<std::endl<<"**************************"<<std::endl;
 		std::vector<std::string> list_of_devices = vt.GetAllDeviceNames();
 		float battery_level = 0 ; 
 		for (uint i = 0; i < list_of_devices.size(); ++i){

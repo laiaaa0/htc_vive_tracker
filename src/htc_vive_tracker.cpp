@@ -179,7 +179,6 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 
         if (this-> UpdateDevicePosition (device_index)){
 
-		//this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, this->max_devices_);
 		vr::TrackedDevicePose_t current_device_pose = this->device_poses_[device_index];
 		if (current_device_pose.bDeviceIsConnected && current_device_pose.bPoseIsValid){
 			vr::HmdMatrix34_t device_matrix = current_device_pose.mDeviceToAbsoluteTracking;
