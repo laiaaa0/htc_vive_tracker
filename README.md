@@ -99,3 +99,5 @@ The coordinate system by default is the following
 
 
 ![htc_original_axis](/uploads/e937a55d83778901d9228423524b4c42/htc_original_axis.png)
+
+ Poses are provided relative to the safe bounds configured by the user
