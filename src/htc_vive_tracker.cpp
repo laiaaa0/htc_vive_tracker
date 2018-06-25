@@ -384,3 +384,11 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
 ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(){
 	return this->last_button_pressed_;
 }
+bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, int strength){
+	if (devices_id_.find(device_name) == devices_id_.end()){
+		return false;
+	}
+	int device_index = devices_id_[device_name];
+	this->vr_system_->TriggerHapticPulse(device_index, 0, strength);
+	return true;
+}

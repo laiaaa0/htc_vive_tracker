@@ -3,8 +3,12 @@
 int main(int argc, char *argv[])
 {
 	bool verbose = false;
+	bool monitor_events = false;
 	if (argc>=2){
-		verbose = true;
+		for (int i = 1; i < argc; ++i ) {
+			if (argv[i] == "-v") verbose = true;	
+			if (argv[i] == "e") monitor_events = true;	
+		}
 	}
 	CHtc_Vive_Tracker vt;
 
@@ -62,8 +66,19 @@ int main(int argc, char *argv[])
 
 
 		}
+		if (monitor_events){
+		    while (true){
+			if (vt.EventPolling()) {
+				
+				std::cout<<"Last button pressed : "<<std::endl;
+				std::cout<<vt.GetLastButtonPressed()<<std::endl;
+				vt.HapticPulse("tracker_1",3999);
+			}
+		    }
+		}
 		
 	} else {
 		std::cout<<"Init failed"<<std::endl;
+		if (!verbose) std::cout<<"Try executing with -v for more information"<<std::endl;
 	}
 }

@@ -16,10 +16,12 @@ enum EventFlags{
 		
 };
 enum ButtonFlags{
+	BUTTON_OUT,
+	BUTTON_GND,
 	BUTTON_GRIP,
 	BUTTON_TRIGGER,
-	BUTTON_MENU,
 	BUTTON_TOUCHPAD,
+	BUTTON_MENU,
 	BUTTON_OTHER
 };
 class CHtc_Vive_Tracker
@@ -94,6 +96,7 @@ class CHtc_Vive_Tracker
     bool DeleteDevice(const int device_id);
     void SetLastButtonPressed(const vr::VREvent_Data_t & data);
     ButtonFlags GetLastButtonPressed();
+    bool HapticPulse(const std::string & device_name,int strength);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
