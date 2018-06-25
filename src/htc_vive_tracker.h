@@ -10,6 +10,18 @@
 //Specific libraries
 #include <openvr.h>
 
+enum EventFlags{
+	BUTTONPRESS,
+	BUTTONUNPRESS
+		
+};
+enum ButtonFlags{
+	BUTTON_GRIP,
+	BUTTON_TRIGGER,
+	BUTTON_MENU,
+	BUTTON_TOUCHPAD,
+	BUTTON_OTHER
+};
 class CHtc_Vive_Tracker
     {
   private:
@@ -33,6 +45,8 @@ class CHtc_Vive_Tracker
     // function to initialize the data structures (devices_names_ and devices_id)
     void InitializeDeviceMap(bool verbose);
     
+    EventFlags events_;
+    ButtonFlags last_button_pressed_;
     
   public:
   
@@ -48,40 +62,42 @@ class CHtc_Vive_Tracker
     static constexpr const char* NAME_NULL = "invalid";
 
     //Initialize and shutdown functionalities
-    bool InitializeVR (bool verbose);
-    bool ShutDownVR (bool verbose);
+    bool InitializeVR(bool verbose);
+    bool ShutDownVR(bool verbose);
 
-    void Update (bool verbose);
+    void Update(bool verbose);
     
     //Device detection
-    bool IsDeviceDetected (const std::string & device_name);
-    void PrintAllDetectedDevices ();
+    bool IsDeviceDetected(const std::string & device_name);
+    void PrintAllDetectedDevices();
     std::vector<std::string> GetAllDeviceNames();
-    float GetBatteryLevel (const std::string & device_name);
+    float GetBatteryLevel(const std::string & device_name);
     bool EventPolling();
 
 
     //Device position and velocity
-    bool GetDevicePoseQuaternion (const std::string & device_name, double (&pose)[3], double (&angle)[4]);
-    bool GetDevicePoseEuler (const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double & yaw);
-    bool GetDeviceVelocity (const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]);
+    bool GetDevicePoseQuaternion(const std::string & device_name, double (&pose)[3], double (&angle)[4]);
+    bool GetDevicePoseEuler(const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double & yaw);
+    bool GetDeviceVelocity(const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]);
 
 
 
     //Chaperone - related functions
     // Get a vector of the four corners, and the size in X and Z
-    bool GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ);
+    bool GetChaperoneDimensions(std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ);
 
 
     //Auxiliar functions
-    std::string GetDeviceClass (const int device_id);
-    std::string SetDeviceName (const int device_id);
-    bool AddNewDevice (const int device_id);
-    bool DeleteDevice (const int device_id);
+    std::string GetDeviceClass(const int device_id);
+    std::string SetDeviceName(const int device_id);
+    bool AddNewDevice(const int device_id);
+    bool DeleteDevice(const int device_id);
+    void SetLastButtonPressed(const vr::VREvent_Data_t & data);
+    ButtonFlags GetLastButtonPressed();
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
-    bool UpdateDevicePosition (const int device_id);
+    bool UpdateDevicePosition(const int device_id);
 };
 
 #endif

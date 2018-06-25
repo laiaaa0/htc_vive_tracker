@@ -34,10 +34,7 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
         this->vr_system_ = vr::VR_Init (&er, vr::VRApplication_Background);
         std::string init_error = vr::VR_GetVRInitErrorAsSymbol(er);
 
-	//if (er == vr::VRInitError_Init_NoServerForBackgroundApp){
-	//	this->vr_system_ = vr::VR_Init (&er, vr::VRApplication_Utility);
-	//}
-        if (verbose){
+	if (verbose){
                 std::cout<<"VR is runtime installed : " <<runtime_ok<<std::endl;
                 std::cout<<"VR is HMD present : " <<hmd_present<<std::endl;
                 std::cout<<"VR init error : " <<er<<init_error<<std::endl;
@@ -112,6 +109,7 @@ bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
 	}
 	else return false;
 }
+
 void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 	for (vr::TrackedDeviceIndex_t device_index  = vr::k_unTrackedDeviceIndex_Hmd; device_index < max_devices_; ++device_index){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].bPoseIsValid){
@@ -162,6 +160,15 @@ bool CHtc_Vive_Tracker::EventPolling(){
 			case vr::VREvent_TrackedDeviceDeactivated:
 				this->DeleteDevice(event.trackedDeviceIndex);
 				break;
+			case vr::VREvent_ButtonPress:
+				events_ = BUTTONPRESS;
+				
+				this->SetLastButtonPressed(event.data);
+				break;
+			case vr::VREvent_ButtonUnpress:
+				events_ = BUTTONUNPRESS;
+				break;
+			
 			default:
 				break;
 		}
@@ -278,7 +285,6 @@ bool CHtc_Vive_Tracker::DeleteDevice (const int device_id){
 	std::string name = devices_names_[device_id];
 	devices_names_[device_id] = "";
 	devices_id_.erase(name);
-	//TODO : Possible improvement : decrease class counter
 	return true;
 }
 
@@ -351,4 +357,30 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
 	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
 	return true;
 
+}
+void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
+	switch (data.controller.button){
+		case vr::k_EButton_Grip:
+    			last_button_pressed_ = BUTTON_GRIP;
+			break;
+		case vr::k_EButton_SteamVR_Touchpad:
+    			last_button_pressed_ = BUTTON_TOUCHPAD;
+			break;
+		case vr::k_EButton_SteamVR_Trigger:
+    			last_button_pressed_ = BUTTON_TRIGGER;
+			break;
+		case vr::k_EButton_ApplicationMenu:
+    			last_button_pressed_ = BUTTON_MENU;
+			break;
+		default:
+    			last_button_pressed_ = BUTTON_OTHER;
+			break;
+	}
+	
+}
+
+
+
+ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(){
+	return this->last_button_pressed_;
 }
