@@ -50,6 +50,7 @@ class CHtc_Vive_Tracker
     EventFlags events_;
     ButtonFlags last_button_pressed_;
     
+    const uint32_t MAX_PULSE_DURATION = 3999;
   public:
   
     //Constructor and destructor

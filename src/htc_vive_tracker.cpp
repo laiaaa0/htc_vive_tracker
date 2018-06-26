@@ -295,7 +295,6 @@ std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 	if (class_name == NAME_CONTROLLER){
 		device_name = class_name+"_"+std::to_string(controller_counts_);
 		controller_counts_++;
-		
 	} else if (class_name == NAME_HMD) {
 		device_name = class_name+"_"+std::to_string(hmd_counts_);
 		hmd_counts_++;
@@ -311,7 +310,6 @@ std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 	} else device_name = NAME_NULL;
 	
 	return device_name;
-
 }
 
 
@@ -320,7 +318,6 @@ void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,d
 	// matrix.m[1] is the vertical component.
 	// we want that on the third component of our pose. (Z is up)
 	// we also want the coordinate system to be direct-cartesian
-	
 	pose[0] = matrix.m[2][3]; // X
 	pose[1] = matrix.m[0][3]; // Y
 	pose[2] = matrix.m[1][3]; // Z
@@ -343,7 +340,6 @@ void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,doub
 }
 
 bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
-	
 	vr::ETrackedDeviceClass device_class = this->vr_system_->GetTrackedDeviceClass(device_id);
 	vr::TrackedDevicePose_t tracked_device_pose;
 	vr::VRControllerState_t controller_state;
@@ -356,7 +352,6 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
 	}
 	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
 	return true;
-
 }
 void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
 	switch (data.controller.button){
@@ -376,7 +371,6 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
     			last_button_pressed_ = BUTTON_OTHER;
 			break;
 	}
-	
 }
 
 
@@ -388,7 +382,8 @@ bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t ax
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
-	uint device_index = devices_id_[device_name];
+	if (duration_microsec > this->MAX_PULSE_DURATION) duration_microsec = this->MAX_PULSE_DURATION;
+	uint32_t device_index = devices_id_[device_name];
 	this->vr_system_->TriggerHapticPulse(device_index, axis_id, duration_microsec);
 	return true;
 }
