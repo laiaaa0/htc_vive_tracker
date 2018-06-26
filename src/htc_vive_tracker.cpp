@@ -43,7 +43,7 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
         if (runtime_ok && hmd_present && er==vr::VRInitError_None) {
 
 		this->max_devices_ = vr::k_unMaxTrackedDeviceCount;
-		for (int i = 0; i < this->max_devices_; ++i){
+		for (uint i = 0; i < this->max_devices_; ++i){
 			devices_names_.push_back("");
 		}
 
@@ -103,7 +103,7 @@ bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
-	int device_index = devices_id_[device_name];
+	uint32_t device_index = devices_id_[device_name];
 	if (device_index < max_devices_){
 		return this->vr_system_->IsTrackedDeviceConnected(device_index);
 	}
@@ -127,7 +127,7 @@ float CHtc_Vive_Tracker::GetBatteryLevel (const std::string & device_name){
 		return 0;
 	}
 	float level = 1.0;
-	int device_id = devices_id_[device_name];
+	uint32_t device_id = devices_id_[device_name];
 	vr::ETrackedDeviceProperty device_property = vr::Prop_DeviceBatteryPercentage_Float;
 	vr::ETrackedPropertyError error;
 	std::string device_class = this->GetDeviceClass(device_id);
@@ -226,7 +226,7 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 }
 bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]){
 	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
-	int device_index = devices_id_[device_name];
+	uint32_t device_index = devices_id_[device_name];
 	if (device_index < this->max_devices_){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].eTrackingResult == vr::TrackingResult_Running_OK){
 			for (int i = 0; i < 3; ++i){
@@ -384,12 +384,11 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
 ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(){
 	return this->last_button_pressed_;
 }
-bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, char strength){
+bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec){
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
 	uint device_index = devices_id_[device_name];
-	uint axis_id = 0;
-	this->vr_system_->TriggerHapticPulse(device_index, axis_id, strength);
+	this->vr_system_->TriggerHapticPulse(device_index, axis_id, duration_microsec);
 	return true;
 }

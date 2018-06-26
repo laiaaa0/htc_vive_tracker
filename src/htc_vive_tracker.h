@@ -36,11 +36,11 @@ class CHtc_Vive_Tracker
     vr::TrackedDevicePose_t device_poses_[vr::k_unMaxTrackedDeviceCount];
 
     //map to obtain the device id from the device string
-    std::map<std::string,int> devices_id_;
+    std::map<std::string,uint32_t> devices_id_;
     //vector to obtain the device name from the device id
     std::vector<std::string>devices_names_;
     // max number of devices
-    int max_devices_;
+    uint32_t max_devices_;
     //Number of devices of each type
     int hmd_counts_=1, controller_counts_=1, tracker_counts_=1, track_reference_counts_=1, null_counts_=1;
     
@@ -96,7 +96,7 @@ class CHtc_Vive_Tracker
     bool DeleteDevice(const int device_id);
     void SetLastButtonPressed(const vr::VREvent_Data_t & data);
     ButtonFlags GetLastButtonPressed();
-    bool HapticPulse(const std::string & device_name,char strength);
+    bool HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);

@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 				std::cout<<"Last button pressed : "<<std::endl;
 				std::cout<<vt.GetLastButtonPressed()<<std::endl;
 			}
-				vt.HapticPulse("controller_1",3999);
+				vt.HapticPulse("controller_1",0,3999);
 		    }
 		}
 		
