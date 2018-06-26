@@ -96,7 +96,7 @@ class CHtc_Vive_Tracker
     bool DeleteDevice(const int device_id);
     void SetLastButtonPressed(const vr::VREvent_Data_t & data);
     ButtonFlags GetLastButtonPressed();
-    bool HapticPulse(const std::string & device_name,int strength);
+    bool HapticPulse(const std::string & device_name,char strength);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);

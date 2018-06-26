@@ -2,12 +2,15 @@
 #include <openvr.h>
 int main(int argc, char *argv[])
 {
+        const std::string verbose_arg = "-v";
+        const std::string events_arg = "-e";
+
 	bool verbose = false;
 	bool monitor_events = false;
 	if (argc>=2){
 		for (int i = 1; i < argc; ++i ) {
-			if (argv[i] == "-v") verbose = true;	
-			if (argv[i] == "e") monitor_events = true;	
+			if (argv[i] == verbose_arg) verbose = true;	
+			if (argv[i] == events_arg) monitor_events = true;	
 		}
 	}
 	CHtc_Vive_Tracker vt;
@@ -72,8 +75,8 @@ int main(int argc, char *argv[])
 				
 				std::cout<<"Last button pressed : "<<std::endl;
 				std::cout<<vt.GetLastButtonPressed()<<std::endl;
-				vt.HapticPulse("tracker_1",3999);
 			}
+				vt.HapticPulse("controller_1",3999);
 		    }
 		}
 		
