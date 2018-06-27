@@ -40,6 +40,8 @@ class CHtc_Vive_Tracker
     std::map<std::string,uint32_t> devices_id_;
     //vector to obtain the device name from the device id
     std::vector<std::string>devices_names_;
+    //vector to obtain the last pressed button from the device id
+    std::vector<ButtonFlags>last_button_pressed_;
     // max number of devices
     uint32_t max_devices_;
     //Number of devices of each type
@@ -49,7 +51,6 @@ class CHtc_Vive_Tracker
     void InitializeDeviceMap(bool verbose);
     
     EventFlags events_;
-    ButtonFlags last_button_pressed_;
     
     const uint32_t MAX_PULSE_DURATION = 3999;
   public:
@@ -96,8 +97,8 @@ class CHtc_Vive_Tracker
     std::string SetDeviceName(const int device_id);
     bool AddNewDevice(const int device_id);
     bool DeleteDevice(const int device_id);
-    void SetLastButtonPressed(const vr::VREvent_Data_t & data);
-    ButtonFlags GetLastButtonPressed();
+    void SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id);
+    ButtonFlags GetLastButtonPressed(const std::string & device_name);
     bool HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);

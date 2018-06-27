@@ -45,6 +45,7 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
 		this->max_devices_ = vr::k_unMaxTrackedDeviceCount;
 		for (uint i = 0; i < this->max_devices_; ++i){
 			devices_names_.push_back("");
+			last_button_pressed_.push_back(BUTTON_OTHER);
 		}
 
 		this->vr_chaperone_ = (vr::IVRChaperone *)vr::VR_GetGenericInterface(vr::IVRChaperone_Version, &er);
@@ -163,12 +164,14 @@ bool CHtc_Vive_Tracker::EventPolling(){
 			case vr::VREvent_ButtonPress:
 				events_ = BUTTONPRESS;
 				
-				this->SetLastButtonPressed(event.data);
+				this->SetLastButtonPressed(event.data,event.trackedDeviceIndex);
 				break;
 			case vr::VREvent_ButtonUnpress:
 				events_ = BUTTONUNPRESS;
 				break;
-			
+			case vr::VREvent_TrackedDeviceRoleChanged:
+				break;
+				
 			default:
 				break;
 		}
@@ -182,10 +185,7 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 		return false;
 	}
 	int device_index = devices_id_[device_name];
-
-
         if (this-> UpdateDevicePosition (device_index)){
-
 		vr::TrackedDevicePose_t current_device_pose = this->device_poses_[device_index];
 		if (current_device_pose.bDeviceIsConnected && current_device_pose.bPoseIsValid){
 			vr::HmdMatrix34_t device_matrix = current_device_pose.mDeviceToAbsoluteTracking;
@@ -195,12 +195,9 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 			return true;
 		}
 	}
-	
-	
 	return false;
-
 }
-    bool CHtc_Vive_Tracker::GetDevicePoseEuler (const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double &yaw){
+bool CHtc_Vive_Tracker::GetDevicePoseEuler (const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double &yaw){
 
 	double quaternion[4];
 	if (this->GetDevicePoseQuaternion(device_name,pose,quaternion)){
@@ -224,6 +221,7 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 
 	return false;
 }
+
 bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]){
 	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
 	uint32_t device_index = devices_id_[device_name];
@@ -241,7 +239,6 @@ bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, doub
 
 
 bool CHtc_Vive_Tracker::GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ){
-	
 	vr::HmdQuad_t rect;
 	std::vector<float>pose(3);
 	if(this->vr_chaperone_->GetPlayAreaSize(&pSizeX,&pSizeZ)){
@@ -256,7 +253,6 @@ bool CHtc_Vive_Tracker::GetChaperoneDimensions (std::vector<std::vector<float> >
 		} 	
 	}
 	return false;
-
 }
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
 std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
@@ -325,13 +321,10 @@ void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,d
 void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]){
 	//w
 	quaternion[3] = sqrt(fmax(0,1+matrix.m[0][0] + matrix.m[1][1] + matrix.m[2][2]))/2;
-
 	//x
 	quaternion[0] = sqrt(fmax(0, 1 + matrix.m[0][0] - matrix.m[1][1] - matrix.m[2][2])) / 2;
-	
 	//y
 	quaternion[1] = sqrt(fmax(0, 1 - matrix.m[0][0] + matrix.m[1][1] - matrix.m[2][2])) / 2;
-	
 	//z
 	quaternion[2] = sqrt(fmax(0, 1 - matrix.m[0][0] - matrix.m[1][1] + matrix.m[2][2])) / 2;
 	quaternion[0] = copysign(quaternion[0], matrix.m[2][1] - matrix.m[1][2]);
@@ -353,32 +346,34 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
 	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
 	return true;
 }
-void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
+void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id){
 	switch (data.controller.button){
 		case vr::k_EButton_Grip:
-    			last_button_pressed_ = BUTTON_GRIP;
+    			last_button_pressed_[tracked_device_id] = BUTTON_GRIP;
 			break;
 		case vr::k_EButton_SteamVR_Touchpad:
-    			last_button_pressed_ = BUTTON_TOUCHPAD;
+    			last_button_pressed_[tracked_device_id] = BUTTON_TOUCHPAD;
 			break;
 		case vr::k_EButton_SteamVR_Trigger:
-    			last_button_pressed_ = BUTTON_TRIGGER;
+    			last_button_pressed_[tracked_device_id] = BUTTON_TRIGGER;
 			break;
 		case vr::k_EButton_ApplicationMenu:
-    			last_button_pressed_ = BUTTON_MENU;
+    			last_button_pressed_[tracked_device_id] = BUTTON_MENU;
 			break;
 		case vr::k_EButton_System:
-    			last_button_pressed_ = BUTTON_SYSTEM;
+    			last_button_pressed_[tracked_device_id] = BUTTON_SYSTEM;
 		default:
-    			last_button_pressed_ = BUTTON_OTHER;
+    			last_button_pressed_[tracked_device_id] = BUTTON_OTHER;
 			break;
 	}
 }
 
 
 
-ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(){
-	return this->last_button_pressed_;
+ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(const std::string & device_name){
+	if (devices_id_.find(device_name) == devices_id_.end()) return BUTTON_OTHER;
+	uint32_t device_index = devices_id_[device_name];
+	return this->last_button_pressed_[device_index];
 }
 bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec){
 	if (devices_id_.find(device_name) == devices_id_.end()){

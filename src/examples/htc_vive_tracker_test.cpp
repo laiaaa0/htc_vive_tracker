@@ -98,10 +98,13 @@ int main(int argc, char *argv[])
 
 		}
 		if (monitor_events){
-		    while (vt.GetLastButtonPressed()!=BUTTON_MENU){
+		    bool button_menu_pressed = false;
+		    while (!button_menu_pressed){
 			if (vt.EventPolling()) {
 				std::cout<<"Last button pressed : "<<std::endl;
-				std::cout<<vt.GetLastButtonPressed()<<std::endl;
+				std::cout<<vt.GetLastButtonPressed("tracker_1")<<" ";
+				std::cout<<vt.GetLastButtonPressed("controller_1")<<std::endl;
+				if (vt.GetLastButtonPressed("tracker_1")==BUTTON_MENU or vt.GetLastButtonPressed("controller_1") == BUTTON_MENU) button_menu_pressed = true;
 			}
 		    }
 		}
