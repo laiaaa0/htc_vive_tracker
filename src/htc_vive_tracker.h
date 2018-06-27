@@ -22,6 +22,7 @@ enum ButtonFlags{
 	BUTTON_TRIGGER,
 	BUTTON_TOUCHPAD,
 	BUTTON_MENU,
+	BUTTON_SYSTEM,
 	BUTTON_OTHER
 };
 class CHtc_Vive_Tracker

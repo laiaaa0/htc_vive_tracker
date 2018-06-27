@@ -367,6 +367,8 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data){
 		case vr::k_EButton_ApplicationMenu:
     			last_button_pressed_ = BUTTON_MENU;
 			break;
+		case vr::k_EButton_System:
+    			last_button_pressed_ = BUTTON_SYSTEM;
 		default:
     			last_button_pressed_ = BUTTON_OTHER;
 			break;
