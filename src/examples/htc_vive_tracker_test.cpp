@@ -70,13 +70,12 @@ int main(int argc, char *argv[])
 
 		}
 		if (monitor_events){
-		    while (true){
+		    while (vt.GetLastButtonPressed()!=BUTTON_MENU){
 			if (vt.EventPolling()) {
-				
 				std::cout<<"Last button pressed : "<<std::endl;
 				std::cout<<vt.GetLastButtonPressed()<<std::endl;
 			}
-				vt.HapticPulse("controller_1",0,3999);
+				vt.HapticPulse("tracker_1",0,3999);
 		    }
 		}
 		
