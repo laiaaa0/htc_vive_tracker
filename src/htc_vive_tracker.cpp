@@ -27,7 +27,6 @@ void CHtc_Vive_Tracker::InitializeDeviceMap(bool verbose){
 // HtcViveTrackerAlgorithm Public API
 //Initialize and shutdown functionalities
 bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
-
         bool runtime_ok  = vr::VR_IsRuntimeInstalled();
         bool hmd_present = vr::VR_IsHmdPresent();
         vr::EVRInitError er;
@@ -65,9 +64,6 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
 		}
 		return false;
 	}
-
-
-	
 }
 
 bool CHtc_Vive_Tracker::ShutDownVR(bool verbose){
@@ -163,7 +159,6 @@ bool CHtc_Vive_Tracker::EventPolling(){
 				break;
 			case vr::VREvent_ButtonPress:
 				events_ = BUTTONPRESS;
-				
 				this->SetLastButtonPressed(event.data,event.trackedDeviceIndex);
 				break;
 			case vr::VREvent_ButtonUnpress:
@@ -368,13 +363,12 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr
 	}
 }
 
-
-
 ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(const std::string & device_name){
 	if (devices_id_.find(device_name) == devices_id_.end()) return BUTTON_OTHER;
 	uint32_t device_index = devices_id_[device_name];
 	return this->last_button_pressed_[device_index];
 }
+
 bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec){
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;

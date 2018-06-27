@@ -97,8 +97,10 @@ class CHtc_Vive_Tracker
     std::string SetDeviceName(const int device_id);
     bool AddNewDevice(const int device_id);
     bool DeleteDevice(const int device_id);
-    void SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id);
+
+    //POGO pin interface - get pressed buttons and send vibrations
     ButtonFlags GetLastButtonPressed(const std::string & device_name);
+    void SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id);
     bool HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec);
 
     void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
