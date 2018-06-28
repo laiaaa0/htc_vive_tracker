@@ -1,10 +1,38 @@
 #include "htc_vive_tracker.h"
 #include <openvr.h>
+
+const std::string verbose_arg = "-v";
+const std::string events_arg = "-e";
+const std::string haptic_arg = "-p";
+const std::string help_arg = "-h";
+
+
+void Usage (){
+	std::cout<<"Use argument "<<verbose_arg<<" to " <<"see more information" << std::endl;
+	std::cout<<"Use argument "<<events_arg<<" to " <<"loop while checking for events" << std::endl;
+	std::cout<<"Use argument "<<haptic_arg<<" to " <<"trigger a haptic pulse on the tracker and controller after setup" << std::endl;
+	std::cout<<"Use argument "<<help_arg<<" to " <<"see this help" << std::endl;
+
+}
 int main(int argc, char *argv[])
-{
+{	
 	bool verbose = false;
+	bool monitor_events = false;
+	bool trigger_haptic_pulse = false;
+	bool display_help = false;
 	if (argc>=2){
-		verbose = true;
+		for (int i = 1; i < argc; ++i ) {
+			if (argv[i] == verbose_arg) verbose = true;	
+			if (argv[i] == events_arg) monitor_events = true;	
+			if (argv[i] == haptic_arg) trigger_haptic_pulse = true;
+			if (argv[i] == help_arg) display_help = true;
+		}
+	}
+	
+
+	if (display_help){
+		Usage();
+		return 0;
 	}
 	CHtc_Vive_Tracker vt;
 
@@ -30,6 +58,7 @@ int main(int argc, char *argv[])
 		std::cout<<"Init done. Detected devices are :"<<std::endl;
 		vt.PrintAllDetectedDevices();
 
+		if (verbose) {
 		std::cout<<std::endl<<"**************************"<<std::endl;
 		std::vector<std::string> list_of_devices = vt.GetAllDeviceNames();
 		float battery_level = 0 ; 
@@ -62,8 +91,26 @@ int main(int argc, char *argv[])
 
 
 		}
+		}
+		if (trigger_haptic_pulse){
+			vt.HapticPulse("tracker_1",0,3999);
+			vt.HapticPulse("controller_1",0,3999);
+
+		}
+		if (monitor_events){
+		    bool button_menu_pressed = false;
+		    while (!button_menu_pressed){
+			if (vt.EventPolling()) {
+				std::cout<<"Last button pressed : "<<std::endl;
+				std::cout<<vt.GetLastButtonPressed("tracker_1")<<" ";
+				std::cout<<vt.GetLastButtonPressed("controller_1")<<std::endl;
+				if (vt.GetLastButtonPressed("tracker_1")==BUTTON_MENU or vt.GetLastButtonPressed("controller_1") == BUTTON_MENU) button_menu_pressed = true;
+			}
+		    }
+		}
 		
 	} else {
 		std::cout<<"Init failed"<<std::endl;
+		if (!verbose) std::cout<<"Try executing with -v for more information"<<std::endl;
 	}
 }
