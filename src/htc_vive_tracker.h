@@ -15,6 +15,7 @@ enum EventFlags{
 	BUTTONUNPRESS
 		
 };
+
 enum ButtonFlags{
 	BUTTON_OUT,
 	BUTTON_GND,
@@ -25,6 +26,7 @@ enum ButtonFlags{
 	BUTTON_SYSTEM,
 	BUTTON_OTHER
 };
+
 class CHtc_Vive_Tracker
     {
   private:
@@ -48,9 +50,11 @@ class CHtc_Vive_Tracker
     int hmd_counts_=1, controller_counts_=1, tracker_counts_=1, track_reference_counts_=1, null_counts_=1;
     
     // function to initialize the data structures (devices_names_ and devices_id)
-    void InitializeDeviceMap(bool verbose);
+    void InitializeDeviceMap();
     
     EventFlags events_;
+
+    bool verbose_;
     
     const uint32_t MAX_PULSE_DURATION = 3999;
   public:
@@ -68,9 +72,9 @@ class CHtc_Vive_Tracker
 
     //Initialize and shutdown functionalities
     bool InitializeVR(bool verbose);
-    bool ShutDownVR(bool verbose);
+    bool ShutDownVR();
 
-    void Update(bool verbose);
+    void Update();
     
     //Device detection
     bool IsDeviceDetected(const std::string & device_name);

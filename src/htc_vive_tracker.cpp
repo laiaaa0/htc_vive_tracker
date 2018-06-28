@@ -1,23 +1,21 @@
 #include "htc_vive_tracker.h"
 
-CHtc_Vive_Tracker::CHtc_Vive_Tracker()
-{
+CHtc_Vive_Tracker::CHtc_Vive_Tracker() {
 
 }
  
-CHtc_Vive_Tracker::~CHtc_Vive_Tracker()
-{
-	this->ShutDownVR(false);
+CHtc_Vive_Tracker::~CHtc_Vive_Tracker() {
+	this->ShutDownVR();
 }
 
-void CHtc_Vive_Tracker::InitializeDeviceMap(bool verbose){
+void CHtc_Vive_Tracker::InitializeDeviceMap() {
 	int num_detected_devices = max_devices_;
-	if (verbose) std::cout<<"Detected devices:"<<std::endl;	
+	if (this->verbose_) std::cout<<"Detected devices:"<<std::endl;	
 	std::string device_name;
 	for (int i = 0; i<num_detected_devices; ++i){
 		if (device_poses_[i].bDeviceIsConnected && device_poses_[i].bPoseIsValid){
 			device_name = this->SetDeviceName(i);
-			if (verbose) std::cout<<i<<" :  "<<device_name<<std::endl;
+			if (this->verbose_) std::cout<<i<<" :  "<<device_name<<std::endl;
 			devices_id_[device_name] = i;
 			devices_names_[i] = device_name;
 		}
@@ -26,14 +24,15 @@ void CHtc_Vive_Tracker::InitializeDeviceMap(bool verbose){
 
 // HtcViveTrackerAlgorithm Public API
 //Initialize and shutdown functionalities
-bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
+bool CHtc_Vive_Tracker::InitializeVR(bool verbose) {
+	this->verbose_ = verbose;
         bool runtime_ok  = vr::VR_IsRuntimeInstalled();
         bool hmd_present = vr::VR_IsHmdPresent();
         vr::EVRInitError er;
         this->vr_system_ = vr::VR_Init (&er, vr::VRApplication_Background);
         std::string init_error = vr::VR_GetVRInitErrorAsSymbol(er);
 
-	if (verbose){
+	if (this->verbose_){
                 std::cout<<"VR is runtime installed : " <<runtime_ok<<std::endl;
                 std::cout<<"VR is HMD present : " <<hmd_present<<std::endl;
                 std::cout<<"VR init error : " <<er<<init_error<<std::endl;
@@ -49,27 +48,27 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose){
 
 		this->vr_chaperone_ = (vr::IVRChaperone *)vr::VR_GetGenericInterface(vr::IVRChaperone_Version, &er);
 		if (er == 0) {
-			if (verbose) std::cout<<"Chaperone initialized correctly"<<std::endl;
+			if (this->verbose_) std::cout<<"Chaperone initialized correctly"<<std::endl;
 		} else {
-			if (verbose) std::cout<<"Problem initializing chaperone"<<std::endl;
+			if (this->verbose_) std::cout<<"Problem initializing chaperone"<<std::endl;
 			return false;
 		}
-		this->Update(verbose);
-	 	this->InitializeDeviceMap(verbose);
+		this->Update();
+	 	this->InitializeDeviceMap();
 		return true;
         }
 	else {
-		if (verbose){
+		if (this->verbose_){
 			std::cout<<"Problem initializing VR"<<std::endl;
 		}
 		return false;
 	}
 }
 
-bool CHtc_Vive_Tracker::ShutDownVR(bool verbose){
+bool CHtc_Vive_Tracker::ShutDownVR() {
  	if (this->vr_system_){
       		vr::VR_Shutdown();
-	if (verbose){
+	if (this->verbose_){
 		std::cout<<"Device is shut down"<<std::endl;
 	}
 		return true;
@@ -82,11 +81,11 @@ bool CHtc_Vive_Tracker::ShutDownVR(bool verbose){
 }
  
 
-void CHtc_Vive_Tracker::Update (bool verbose){
+void CHtc_Vive_Tracker::Update() {
 	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
 	for (vr::TrackedDeviceIndex_t device_index  = vr::k_unTrackedDeviceIndex_Hmd; device_index < max_devices_; ++device_index){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].bPoseIsValid){
-			if (verbose) {
+			if (this->verbose_) {
 				std::string info = ("device["+std::to_string(device_index)+"]: " + this->GetDeviceClass(device_index) + " " + std::to_string (device_poses_[device_index].eTrackingResult));
 				std::cout<<info<<std::endl;
 			}
@@ -96,7 +95,7 @@ void CHtc_Vive_Tracker::Update (bool verbose){
 }
 
 //Device detection
-bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
+bool CHtc_Vive_Tracker::IsDeviceDetected(const std::string & device_name) {
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
@@ -107,7 +106,7 @@ bool CHtc_Vive_Tracker::IsDeviceDetected (const std::string & device_name){
 	else return false;
 }
 
-void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
+void CHtc_Vive_Tracker::PrintAllDetectedDevices() {
 	for (vr::TrackedDeviceIndex_t device_index  = vr::k_unTrackedDeviceIndex_Hmd; device_index < max_devices_; ++device_index){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].bPoseIsValid){
 
@@ -119,7 +118,7 @@ void CHtc_Vive_Tracker::PrintAllDetectedDevices (){
 }
 
 
-float CHtc_Vive_Tracker::GetBatteryLevel (const std::string & device_name){
+float CHtc_Vive_Tracker::GetBatteryLevel(const std::string & device_name) {
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return 0;
 	}
@@ -136,7 +135,7 @@ float CHtc_Vive_Tracker::GetBatteryLevel (const std::string & device_name){
 	}
 	return level;
 }
-std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
+std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames() {
 	std::vector<std::string> non_empty_device_names;	
 	for (uint i = 0; i<devices_names_.size(); ++i){
 		if (devices_names_[i]!=""){
@@ -147,7 +146,7 @@ std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames(){
 
 }
 
-bool CHtc_Vive_Tracker::EventPolling(){
+bool CHtc_Vive_Tracker::EventPolling() {
 	vr::VREvent_t event;
 	if (this->vr_system_->PollNextEvent(&event, sizeof(event))){
 		switch (event.eventType){
@@ -175,7 +174,7 @@ bool CHtc_Vive_Tracker::EventPolling(){
 	return false;
 }
 //Device position 
-bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name,double (&pose)[3], double (&angle)[4]){
+bool CHtc_Vive_Tracker::GetDevicePoseQuaternion(const std::string & device_name,double (&pose)[3], double (&angle)[4]) {
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
@@ -192,7 +191,7 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion (const std::string & device_name
 	}
 	return false;
 }
-bool CHtc_Vive_Tracker::GetDevicePoseEuler (const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double &yaw){
+bool CHtc_Vive_Tracker::GetDevicePoseEuler(const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double &yaw) {
 
 	double quaternion[4];
 	if (this->GetDevicePoseQuaternion(device_name,pose,quaternion)){
@@ -217,7 +216,7 @@ bool CHtc_Vive_Tracker::GetDevicePoseEuler (const std::string & device_name, dou
 	return false;
 }
 
-bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]){
+bool CHtc_Vive_Tracker::GetDeviceVelocity(const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]) {
 	this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, device_poses_, max_devices_);
 	uint32_t device_index = devices_id_[device_name];
 	if (device_index < this->max_devices_){
@@ -233,7 +232,7 @@ bool CHtc_Vive_Tracker::GetDeviceVelocity (const std::string & device_name, doub
 }
 
 
-bool CHtc_Vive_Tracker::GetChaperoneDimensions (std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ){
+bool CHtc_Vive_Tracker::GetChaperoneDimensions(std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ) {
 	vr::HmdQuad_t rect;
 	std::vector<float>pose(3);
 	if(this->vr_chaperone_->GetPlayAreaSize(&pSizeX,&pSizeZ)){
@@ -250,7 +249,7 @@ bool CHtc_Vive_Tracker::GetChaperoneDimensions (std::vector<std::vector<float> >
 	return false;
 }
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
-std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
+std::string CHtc_Vive_Tracker::GetDeviceClass(const int device_id) {
     vr::ETrackedDeviceClass tracked_device_class = this->vr_system_ ->GetTrackedDeviceClass (device_id);
     if (tracked_device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller){
 	return NAME_CONTROLLER;
@@ -266,13 +265,13 @@ std::string CHtc_Vive_Tracker::GetDeviceClass (const int device_id){
 }
 
 
-bool CHtc_Vive_Tracker::AddNewDevice (const int device_id){
+bool CHtc_Vive_Tracker::AddNewDevice(const int device_id) {
 	std::string name = this->SetDeviceName (device_id);
 	devices_id_[name] = device_id;
 	devices_names_[device_id] = name;
 	return true;
 }
-bool CHtc_Vive_Tracker::DeleteDevice (const int device_id){
+bool CHtc_Vive_Tracker::DeleteDevice(const int device_id) {
 	std::string name = devices_names_[device_id];
 	devices_names_[device_id] = "";
 	devices_id_.erase(name);
@@ -280,7 +279,7 @@ bool CHtc_Vive_Tracker::DeleteDevice (const int device_id){
 }
 
 
-std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
+std::string CHtc_Vive_Tracker::SetDeviceName(const int device_id) {
 	std::string class_name = this->GetDeviceClass (device_id);
 	std::string device_name;
 	if (class_name == NAME_CONTROLLER){
@@ -305,7 +304,7 @@ std::string CHtc_Vive_Tracker::SetDeviceName (const int device_id){
 
 
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start              
-void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,double (&pose)[3]){
+void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,double (&pose)[3]) {
 	// matrix.m[1] is the vertical component.
 	// we want that on the third component of our pose. (Z is up)
 	// we also want the coordinate system to be direct-cartesian
@@ -313,7 +312,7 @@ void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,d
 	pose[1] = matrix.m[0][3]; // Y
 	pose[2] = matrix.m[1][3]; // Z
 }
-void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]){
+void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]) {
 	//w
 	quaternion[3] = sqrt(fmax(0,1+matrix.m[0][0] + matrix.m[1][1] + matrix.m[2][2]))/2;
 	//x
@@ -327,7 +326,7 @@ void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,doub
 	quaternion[2] = copysign(quaternion[2], matrix.m[1][0] - matrix.m[0][1]);
 }
 
-bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
+bool CHtc_Vive_Tracker::UpdateDevicePosition(const int device_id) {
 	vr::ETrackedDeviceClass device_class = this->vr_system_->GetTrackedDeviceClass(device_id);
 	vr::TrackedDevicePose_t tracked_device_pose;
 	vr::VRControllerState_t controller_state;
@@ -341,7 +340,7 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition (const int device_id){
 	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
 	return true;
 }
-void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id){
+void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id) {
 	switch (data.controller.button){
 		case vr::k_EButton_Grip:
     			last_button_pressed_[tracked_device_id] = BUTTON_GRIP;
@@ -363,13 +362,13 @@ void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr
 	}
 }
 
-ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(const std::string & device_name){
+ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(const std::string & device_name) {
 	if (devices_id_.find(device_name) == devices_id_.end()) return BUTTON_OTHER;
 	uint32_t device_index = devices_id_[device_name];
 	return this->last_button_pressed_[device_index];
 }
 
-bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec){
+bool CHtc_Vive_Tracker::HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec) {
 	if (devices_id_.find(device_name) == devices_id_.end()){
 		return false;
 	}
