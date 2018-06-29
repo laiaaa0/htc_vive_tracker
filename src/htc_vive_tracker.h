@@ -10,6 +10,17 @@
 //Specific libraries
 #include <openvr.h>
 
+struct Vec3 {
+	double x;
+	double y;
+	double z;
+};
+void PrintVec3 (Vec3 vector_);
+
+struct Velocity {
+	Vec3 linear_velocity;
+	Vec3 angular_velocity;
+};
 enum EventFlags{
 	BUTTONPRESS,
 	BUTTONUNPRESS
@@ -44,6 +55,7 @@ class CHtc_Vive_Tracker
     std::vector<std::string>devices_names_;
     //vector to obtain the last pressed button from the device id
     std::vector<ButtonFlags>last_button_pressed_;
+    ButtonFlags last_button_tracker;
     // max number of devices
     uint32_t max_devices_;
     //Number of devices of each type
@@ -87,7 +99,7 @@ class CHtc_Vive_Tracker
     //Device position and velocity
     bool GetDevicePoseQuaternion(const std::string & device_name, double (&pose)[3], double (&angle)[4]);
     bool GetDevicePoseEuler(const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double & yaw);
-    bool GetDeviceVelocity(const std::string & device_name, double (&linear_velocity)[3], double (&angular_velocity)[3]);
+    Velocity GetDeviceVelocity(const std::string & device_name);
 
 
 
