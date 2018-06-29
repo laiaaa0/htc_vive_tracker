@@ -15,19 +15,28 @@ struct Vec3 {
 	double y;
 	double z;
 };
-void PrintVec3 (Vec3 vector_);
+void PrintVec3(Vec3 vector_);
 
 struct Velocity {
 	Vec3 linear_velocity;
 	Vec3 angular_velocity;
 };
-enum EventFlags{
+struct Dimension {
+	Vec3 corner1;
+	Vec3 corner2;
+	Vec3 corner3;
+	Vec3 corner4;
+
+	float size_x;
+	float size_z;
+};
+enum EventFlags {
 	BUTTONPRESS,
 	BUTTONUNPRESS
 		
 };
 
-enum ButtonFlags{
+enum ButtonFlags {
 	BUTTON_OUT,
 	BUTTON_GND,
 	BUTTON_GRIP,
@@ -105,7 +114,7 @@ class CHtc_Vive_Tracker
 
     //Chaperone - related functions
     // Get a vector of the four corners, and the size in X and Z
-    bool GetChaperoneDimensions(std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ);
+    Dimension GetChaperoneDimensions();
 
 
     //Auxiliar functions

@@ -22,7 +22,7 @@ void CHtc_Vive_Tracker::InitializeDeviceMap() {
 	}
 }
 
-void PrintVec3 (Vec3 vector_){
+void PrintVec3(Vec3 vector_) {
 	std::cout<<vector_.x<<" "<<vector_.y<<" "<<vector_.z<<std::endl;
 }
 // HtcViveTrackerAlgorithm Public API
@@ -79,8 +79,6 @@ bool CHtc_Vive_Tracker::ShutDownVR() {
 	else {
 		return false;
 	}
-	
-	
 }
  
 
@@ -93,7 +91,6 @@ void CHtc_Vive_Tracker::Update() {
 				std::cout<<info<<std::endl;
 			}
 		}
-
 	}
 }
 
@@ -112,7 +109,6 @@ bool CHtc_Vive_Tracker::IsDeviceDetected(const std::string & device_name) {
 void CHtc_Vive_Tracker::PrintAllDetectedDevices() {
 	for (vr::TrackedDeviceIndex_t device_index  = vr::k_unTrackedDeviceIndex_Hmd; device_index < max_devices_; ++device_index){
 		if (device_poses_[device_index].bDeviceIsConnected && device_poses_[device_index].bPoseIsValid){
-
 			std::string device_name = devices_names_[device_index];
 			std::string info = ("device["+std::to_string(device_index)+"]: " + device_name + " is connected");
 			std::cout<<info<<std::endl;
@@ -138,6 +134,7 @@ float CHtc_Vive_Tracker::GetBatteryLevel(const std::string & device_name) {
 	}
 	return level;
 }
+
 std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames() {
 	std::vector<std::string> non_empty_device_names;	
 	for (uint i = 0; i<devices_names_.size(); ++i){
@@ -197,7 +194,6 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion(const std::string & device_name,
 	return false;
 }
 bool CHtc_Vive_Tracker::GetDevicePoseEuler(const std::string & device_name, double (&pose)[3], double & roll, double & pitch, double &yaw) {
-
 	double quaternion[4];
 	if (this->GetDevicePoseQuaternion(device_name,pose,quaternion)){
 		double sinr = 2 * (quaternion[3]*quaternion[0] + quaternion[1]*quaternion[2]);
@@ -211,13 +207,11 @@ bool CHtc_Vive_Tracker::GetDevicePoseEuler(const std::string & device_name, doub
 		} else {
       			pitch = asin (sinp);
 		}
-		
 		double siny = 2 * (quaternion[4]*quaternion[3] + quaternion[0]*quaternion[1]);
 		double cosy = 1 - (2*(quaternion[1]*quaternion[1] + quaternion[2]*quaternion[2]));
 		yaw = atan2(siny,cosy);
 		return true;
 	}	
-
 	return false;
 }
 
@@ -241,21 +235,31 @@ Velocity CHtc_Vive_Tracker::GetDeviceVelocity(const std::string & device_name) {
 }
 
 
-bool CHtc_Vive_Tracker::GetChaperoneDimensions(std::vector<std::vector<float> > & corners, float & pSizeX, float & pSizeZ) {
+Dimension CHtc_Vive_Tracker::GetChaperoneDimensions() {
 	vr::HmdQuad_t rect;
+	Dimension chaperone_dimension;
 	std::vector<float>pose(3);
-	if(this->vr_chaperone_->GetPlayAreaSize(&pSizeX,&pSizeZ)){
+	if(this->vr_chaperone_->GetPlayAreaSize(&chaperone_dimension.size_x, &chaperone_dimension.size_z)){
 		if (this->vr_chaperone_->GetPlayAreaRect(& rect)){
-			for (int i = 0; i<4; ++i){
-				pose[0] = rect.vCorners[i].v[0];
-				pose[1] = rect.vCorners[i].v[1];
-				pose[2] = rect.vCorners[i].v[2];
-				corners.push_back(pose);
-			}
-			return true;		
+			chaperone_dimension.corner1.x = rect.vCorners[0].v[0];
+			chaperone_dimension.corner1.y = rect.vCorners[0].v[1];
+			chaperone_dimension.corner1.z = rect.vCorners[0].v[2];
+
+			chaperone_dimension.corner2.x = rect.vCorners[1].v[0];
+			chaperone_dimension.corner2.y = rect.vCorners[1].v[1];
+			chaperone_dimension.corner2.z = rect.vCorners[1].v[2];
+
+			chaperone_dimension.corner3.x = rect.vCorners[2].v[0];
+			chaperone_dimension.corner3.y = rect.vCorners[2].v[1];
+			chaperone_dimension.corner3.z = rect.vCorners[2].v[2];
+
+			chaperone_dimension.corner4.x = rect.vCorners[3].v[0];
+			chaperone_dimension.corner4.y = rect.vCorners[3].v[1];
+			chaperone_dimension.corner4.z = rect.vCorners[3].v[2];
+			
 		} 	
 	}
-	return false;
+	return chaperone_dimension;
 }
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start
 std::string CHtc_Vive_Tracker::GetDeviceClass(const int device_id) {
@@ -342,9 +346,7 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition(const int device_id) {
 	vr::TrackedDevicePose_t tracked_device_pose;
 	vr::VRControllerState_t controller_state;
         this->vr_system_->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, this->device_poses_, this->max_devices_);
-
 	if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Controller or device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker){
-		
 		this->vr_system_->GetControllerStateWithPose(vr::TrackingUniverseStanding, device_id, &controller_state, sizeof(controller_state), &tracked_device_pose);
 		this->device_poses_[device_id] = tracked_device_pose;
 	}

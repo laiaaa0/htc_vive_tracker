@@ -12,21 +12,19 @@ void Usage (){
 	std::cout<<"Use argument "<<events_arg<<" to " <<"loop while checking for events" << std::endl;
 	std::cout<<"Use argument "<<haptic_arg<<" to " <<"trigger a haptic pulse on the tracker and controller after setup" << std::endl;
 	std::cout<<"Use argument "<<help_arg<<" to " <<"see this help" << std::endl;
-
 }
+
 int main(int argc, char *argv[])
 {	
 	bool verbose = false;
 	bool monitor_events = false;
 	bool trigger_haptic_pulse = false;
 	bool display_help = false;
-	if (argc>=2){
-		for (int i = 1; i < argc; ++i ) {
-			if (argv[i] == verbose_arg) verbose = true;	
-			if (argv[i] == events_arg) monitor_events = true;	
-			if (argv[i] == haptic_arg) trigger_haptic_pulse = true;
-			if (argv[i] == help_arg) display_help = true;
-		}
+	for (int i = 1; i < argc; ++i ) {
+		if (argv[i] == verbose_arg) verbose = true;	
+		if (argv[i] == events_arg) monitor_events = true;	
+		if (argv[i] == haptic_arg) trigger_haptic_pulse = true;
+		if (argv[i] == help_arg) display_help = true;
 	}
 	
 
@@ -34,26 +32,21 @@ int main(int argc, char *argv[])
 		Usage();
 		return 0;
 	}
+
 	CHtc_Vive_Tracker vt;
 
 	if (vt.InitializeVR(verbose)){
 
-		float sizeX, sizeZ;
-		std::vector<std::vector<float> > play_corners;
-		if (vt.GetChaperoneDimensions(play_corners,sizeX,sizeZ)){
+		Dimension chaperone_dim = vt.GetChaperoneDimensions();
 			std::cout<<"Play area corners: "<<std::endl;
-
-			for (uint i=0; i<play_corners.size(); ++i){
-				std::cout<<"  ("<<play_corners[i][0]<<", "<<play_corners[i][1]<<", "<<play_corners[i][2]<<")"<<std::endl;
-			}
+			PrintVec3(chaperone_dim.corner1);
+			PrintVec3(chaperone_dim.corner2);
+			PrintVec3(chaperone_dim.corner3);
+			PrintVec3(chaperone_dim.corner4);
 			//size in meters
-			std::cout<<"Play area size : "<<std::endl<<"  "<<sizeX<<" x  "<<sizeZ<<" m"<<std::endl;
+			std::cout<<"Play area size : "<<std::endl<<"  "<<chaperone_dim.size_x<<" x  "<<chaperone_dim.size_z<<" m"<<std::endl;
 
 
-		}
-		else {
-			std::cout<<"Could not calculate play area size"<<std::endl;
-		}
 		
 		std::cout<<"Init done. Detected devices are :"<<std::endl;
 		vt.PrintAllDetectedDevices();
