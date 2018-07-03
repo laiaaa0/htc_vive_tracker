@@ -15,12 +15,14 @@ struct Vec3 {
 	double y;
 	double z;
 };
+
 void PrintVec3(Vec3 vector_);
 
 struct Velocity {
 	Vec3 linear_velocity;
 	Vec3 angular_velocity;
 };
+
 struct Dimension {
 	Vec3 corner1;
 	Vec3 corner2;
@@ -30,6 +32,7 @@ struct Dimension {
 	float size_x;
 	float size_z;
 };
+
 enum EventFlags {
 	BUTTONPRESS,
 	BUTTONUNPRESS
@@ -78,6 +81,7 @@ class CHtc_Vive_Tracker
     bool verbose_;
     
     const uint32_t MAX_PULSE_DURATION = 3999;
+
   public:
   
     //Constructor and destructor
@@ -114,7 +118,7 @@ class CHtc_Vive_Tracker
 
     //Chaperone - related functions
     // Get a vector of the four corners, and the size in X and Z
-    Dimension GetChaperoneDimensions();
+    Dimension GetChaperoneDimensions() const;
 
 
     //Auxiliar functions
@@ -128,7 +132,7 @@ class CHtc_Vive_Tracker
     void SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id);
     bool HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec);
 
-    void MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix,double (&pose)[3]);
+    Vec3 MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
     bool UpdateDevicePosition(const int device_id);
 };

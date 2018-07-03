@@ -6,6 +6,19 @@ const std::string events_arg = "-e";
 const std::string haptic_arg = "-p";
 const std::string help_arg = "-h";
 
+void ShowDimensionsPlay (const CHtc_Vive_Tracker & vt){
+	Dimension chaperone_dim = vt.GetChaperoneDimensions();
+	std::cout<<"Play area corners: "<<std::endl;
+	PrintVec3(chaperone_dim.corner1);
+	PrintVec3(chaperone_dim.corner2);
+	PrintVec3(chaperone_dim.corner3);
+	PrintVec3(chaperone_dim.corner4);
+	//size in meters
+	std::cout<<"Play area size : "<<std::endl<<"  "<<chaperone_dim.size_x<<" x  "<<chaperone_dim.size_z<<" m"<<std::endl;
+
+
+
+}
 
 void Usage (){
 	std::cout<<"Use argument "<<verbose_arg<<" to " <<"see more information" << std::endl;
@@ -14,6 +27,37 @@ void Usage (){
 	std::cout<<"Use argument "<<help_arg<<" to " <<"see this help" << std::endl;
 }
 
+void PrintAllDevicesInformation (CHtc_Vive_Tracker & vt){
+	std::cout<<std::endl<<"**************************"<<std::endl;
+	std::vector<std::string> list_of_devices = vt.GetAllDeviceNames();
+	float battery_level = 0 ; 
+	for (uint i = 0; i < list_of_devices.size(); ++i){
+		double pose[3];
+		double quat[4];
+		if (vt.IsDeviceDetected(list_of_devices[i])){
+			
+			bool success = vt.GetDevicePoseQuaternion(list_of_devices[i],pose,quat);
+			Velocity velocity = vt.GetDeviceVelocity (list_of_devices[i]);
+			if (success){
+				std::cout<<list_of_devices[i]<<" Position"<<std::endl;
+				for (int i=0; i<3;++i) std::cout<<pose[i]<<" ";
+				std::cout<<std::endl;
+				std::cout<<list_of_devices[i]<<" Quaternion"<<std::endl;
+				for (int i=0; i<4;++i) std::cout<<quat[i]<<" ";
+				std::cout<<std::endl;
+				std::cout<<list_of_devices[i]<<" Linear Velocity"<<std::endl;
+				PrintVec3 (velocity.linear_velocity);
+				std::cout<<list_of_devices[i]<<" Angular Velocity"<<std::endl;
+				PrintVec3 (velocity.linear_velocity);
+				battery_level = vt.GetBatteryLevel (list_of_devices[i]);
+				std::cout<<std::endl<<"Battery level = "<<battery_level<<std::endl;
+				std::cout<<std::endl<<"**************************"<<std::endl;
+				}
+			} else std::cout<<list_of_devices[i]<<" not detected"<<std::endl;
+
+
+		}
+}
 int main(int argc, char *argv[])
 {	
 	bool verbose = false;
@@ -37,50 +81,13 @@ int main(int argc, char *argv[])
 
 	if (vt.InitializeVR(verbose)){
 
-		Dimension chaperone_dim = vt.GetChaperoneDimensions();
-			std::cout<<"Play area corners: "<<std::endl;
-			PrintVec3(chaperone_dim.corner1);
-			PrintVec3(chaperone_dim.corner2);
-			PrintVec3(chaperone_dim.corner3);
-			PrintVec3(chaperone_dim.corner4);
-			//size in meters
-			std::cout<<"Play area size : "<<std::endl<<"  "<<chaperone_dim.size_x<<" x  "<<chaperone_dim.size_z<<" m"<<std::endl;
-
-
 		
+		ShowDimensionsPlay(vt);
 		std::cout<<"Init done. Detected devices are :"<<std::endl;
 		vt.PrintAllDetectedDevices();
 
 		if (verbose) {
-		std::cout<<std::endl<<"**************************"<<std::endl;
-		std::vector<std::string> list_of_devices = vt.GetAllDeviceNames();
-		float battery_level = 0 ; 
-		for (uint i = 0; i < list_of_devices.size(); ++i){
-			double pose[3];
-			double quat[4];
-			if (vt.IsDeviceDetected(list_of_devices[i])){
-				
-				bool success = vt.GetDevicePoseQuaternion(list_of_devices[i],pose,quat);
-				Velocity velocity = vt.GetDeviceVelocity (list_of_devices[i]);
-				if (success){
-					std::cout<<list_of_devices[i]<<" Position"<<std::endl;
-					for (int i=0; i<3;++i) std::cout<<pose[i]<<" ";
-					std::cout<<std::endl;
-					std::cout<<list_of_devices[i]<<" Quaternion"<<std::endl;
-					for (int i=0; i<4;++i) std::cout<<quat[i]<<" ";
-					std::cout<<std::endl;
-					std::cout<<list_of_devices[i]<<" Linear Velocity"<<std::endl;
-					PrintVec3 (velocity.linear_velocity);
-					std::cout<<list_of_devices[i]<<" Angular Velocity"<<std::endl;
-					PrintVec3 (velocity.linear_velocity);
-					battery_level = vt.GetBatteryLevel (list_of_devices[i]);
-					std::cout<<std::endl<<"Battery level = "<<battery_level<<std::endl;
-					std::cout<<std::endl<<"**************************"<<std::endl;
-				}
-			} else std::cout<<list_of_devices[i]<<" not detected"<<std::endl;
-
-
-		}
+			PrintAllDevicesInformation(vt);
 		}
 		if (trigger_haptic_pulse){
 			vt.HapticPulse("tracker_1",0,3999);

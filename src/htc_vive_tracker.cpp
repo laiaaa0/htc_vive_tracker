@@ -185,7 +185,10 @@ bool CHtc_Vive_Tracker::GetDevicePoseQuaternion(const std::string & device_name,
 		vr::TrackedDevicePose_t current_device_pose = this->device_poses_[device_index];
 		if (current_device_pose.bDeviceIsConnected && current_device_pose.bPoseIsValid){
 			vr::HmdMatrix34_t device_matrix = current_device_pose.mDeviceToAbsoluteTracking;
-			this->MatrixToPoseZVertical(device_matrix,pose);
+			Vec3 pose_vec3 = this->MatrixToPoseZVertical(device_matrix);
+			pose[0] = pose_vec3.x;
+			pose[1] = pose_vec3.y;
+			pose[2] = pose_vec3.z;
 			this->MatrixToQuaternion(device_matrix,angle);
 			std::string info = std::to_string (current_device_pose.eTrackingResult);
 			return true;
@@ -235,7 +238,7 @@ Velocity CHtc_Vive_Tracker::GetDeviceVelocity(const std::string & device_name) {
 }
 
 
-Dimension CHtc_Vive_Tracker::GetChaperoneDimensions() {
+Dimension CHtc_Vive_Tracker::GetChaperoneDimensions() const {
 	vr::HmdQuad_t rect;
 	Dimension chaperone_dimension;
 	std::vector<float>pose(3);
@@ -317,13 +320,15 @@ std::string CHtc_Vive_Tracker::SetDeviceName(const int device_id) {
 
 
 //https://github.com/osudrl/CassieVrControls/wiki/OpenVR-Quick-Start              
-void CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix,double (&pose)[3]) {
+Vec3 CHtc_Vive_Tracker::MatrixToPoseZVertical(const vr::HmdMatrix34_t & matrix) {
 	// matrix.m[1] is the vertical component.
 	// we want that on the third component of our pose. (Z is up)
 	// we also want the coordinate system to be direct-cartesian
-	pose[0] = matrix.m[2][3]; // X
-	pose[1] = matrix.m[0][3]; // Y
-	pose[2] = matrix.m[1][3]; // Z
+	Vec3 pose;
+	pose.x = matrix.m[2][3]; // X
+	pose.y = matrix.m[0][3]; // Y
+	pose.z = matrix.m[1][3]; // Z
+	return pose;
 }
 
 void CHtc_Vive_Tracker::MatrixToQuaternion(const vr::HmdMatrix34_t & matrix,double (&quaternion)[4]) {
