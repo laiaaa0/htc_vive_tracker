@@ -99,9 +99,9 @@ int main(int argc, char *argv[])
 		    while (!button_menu_pressed){
 			if (vt.EventPolling()) {
 				std::cout<<"Last button pressed : "<<std::endl;
-				std::cout<<vt.GetLastButtonPressed("tracker_1")<<" ";
-				std::cout<<vt.GetLastButtonPressed("controller_1")<<std::endl;
-				if (vt.GetLastButtonPressed("tracker_1")==BUTTON_MENU or vt.GetLastButtonPressed("controller_1") == BUTTON_MENU) button_menu_pressed = true;
+				std::cout<<vt.GetLastButtonPressedString("tracker_1")<<" ";
+				std::cout<<vt.GetLastButtonPressedString("controller_1")<<std::endl;
+				if (vt.GetLastButtonPressedEnum("tracker_1")==vr::k_EButton_ApplicationMenu or vt.GetLastButtonPressedEnum("controller_1") == vr::k_EButton_ApplicationMenu) button_menu_pressed = true;
 			}
 		    }
 		}

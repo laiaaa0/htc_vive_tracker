@@ -46,7 +46,7 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose) {
 		this->max_devices_ = vr::k_unMaxTrackedDeviceCount;
 		for (uint i = 0; i < this->max_devices_; ++i){
 			devices_names_.push_back("");
-			last_button_pressed_.push_back(BUTTON_OTHER);
+			last_button_pressed_.push_back(vr::k_EButton_Max);
 		}
 
 		this->vr_chaperone_ = (vr::IVRChaperone *)vr::VR_GetGenericInterface(vr::IVRChaperone_Version, &er);
@@ -149,6 +149,7 @@ std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames() {
 bool CHtc_Vive_Tracker::EventPolling() {
 	vr::VREvent_t event;
 	if (this->vr_system_->PollNextEvent(&event, sizeof(event))){
+		//std::cout<<this->vr_system_->GetEventTypeNameFromEnum((vr::EVREventType)event.eventType)<<std::endl;
 		switch (event.eventType){
 			case vr::VREvent_TrackedDeviceActivated:
 				this->AddNewDevice(event.trackedDeviceIndex);
@@ -158,7 +159,7 @@ bool CHtc_Vive_Tracker::EventPolling() {
 				break;
 			case vr::VREvent_ButtonPress:
 				events_ = BUTTONPRESS;
-				this->SetLastButtonPressed(event.data,event.trackedDeviceIndex);
+				last_button_pressed_[event.trackedDeviceIndex] = (vr::EVRButtonId)event.data.controller.button;
 				break;
 			case vr::VREvent_ButtonUnpress:
 				events_ = BUTTONUNPRESS;
@@ -358,32 +359,16 @@ bool CHtc_Vive_Tracker::UpdateDevicePosition(const int device_id) {
 	else if (device_class == vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid) return false;
 	return true;
 }
-void CHtc_Vive_Tracker::SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id) {
-	switch (data.controller.button){
-		case vr::k_EButton_Grip:
-    			last_button_pressed_[tracked_device_id] = BUTTON_GRIP;
-			last_button_tracker = BUTTON_GRIP;
-			break;
-		case vr::k_EButton_SteamVR_Touchpad:
-    			last_button_pressed_[tracked_device_id] = BUTTON_TOUCHPAD;
-			break;
-		case vr::k_EButton_SteamVR_Trigger:
-    			last_button_pressed_[tracked_device_id] = BUTTON_TRIGGER;
-			break;
-		case vr::k_EButton_ApplicationMenu:
-    			last_button_pressed_[tracked_device_id] = BUTTON_MENU;
-			last_button_tracker = BUTTON_MENU;
-			break;
-		case vr::k_EButton_System:
-    			last_button_pressed_[tracked_device_id] = BUTTON_SYSTEM;
-		default:
-    			last_button_pressed_[tracked_device_id] = BUTTON_OTHER;
-			break;
-	}
+
+
+std::string CHtc_Vive_Tracker::GetLastButtonPressedString(const std::string & device_name) {
+	return this->vr_system_->GetButtonIdNameFromEnum(this->GetLastButtonPressedEnum(device_name));
 }
 
-ButtonFlags CHtc_Vive_Tracker::GetLastButtonPressed(const std::string & device_name) {
-	if (devices_id_.find(device_name) == devices_id_.end()) return BUTTON_OTHER;
+vr::EVRButtonId CHtc_Vive_Tracker::GetLastButtonPressedEnum(const std::string & device_name) {
+	if (devices_id_.find(device_name) == devices_id_.end()) {
+		return vr::k_EButton_Max;
+	}
 	uint32_t device_index = devices_id_[device_name];
 	return this->last_button_pressed_[device_index];
 }

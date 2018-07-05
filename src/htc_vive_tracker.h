@@ -16,8 +16,6 @@ struct Vec3 {
 	double z;
 };
 
-void PrintVec3(Vec3 vector_);
-
 struct Velocity {
 	Vec3 linear_velocity;
 	Vec3 angular_velocity;
@@ -49,6 +47,17 @@ enum ButtonFlags {
 	BUTTON_SYSTEM,
 	BUTTON_OTHER
 };
+/*
+vr::k_EButton_Grip
+vr::k_EButton_SteamVR_Touchpad
+vr::k_EButton_ApplicationMenu
+vr::k_EButton_System
+*/
+
+
+
+
+void PrintVec3(Vec3 vector_);
 
 class CHtc_Vive_Tracker
     {
@@ -66,8 +75,7 @@ class CHtc_Vive_Tracker
     //vector to obtain the device name from the device id
     std::vector<std::string>devices_names_;
     //vector to obtain the last pressed button from the device id
-    std::vector<ButtonFlags>last_button_pressed_;
-    ButtonFlags last_button_tracker;
+    std::vector<vr::EVRButtonId>last_button_pressed_;
     // max number of devices
     uint32_t max_devices_;
     //Number of devices of each type
@@ -128,13 +136,14 @@ class CHtc_Vive_Tracker
     bool DeleteDevice(const int device_id);
 
     //POGO pin interface - get pressed buttons and send vibrations
-    ButtonFlags GetLastButtonPressed(const std::string & device_name);
-    void SetLastButtonPressed(const vr::VREvent_Data_t & data, vr::TrackedDeviceIndex_t tracked_device_id);
+    std::string GetLastButtonPressedString(const std::string & device_name);
+    vr::EVRButtonId GetLastButtonPressedEnum(const std::string & device_name);
     bool HapticPulse(const std::string & device_name, uint32_t axis_id, unsigned short duration_microsec);
 
     Vec3 MatrixToPoseZVertical(const vr::HmdMatrix34_t & device_matrix);
     void MatrixToQuaternion(const vr::HmdMatrix34_t & device_matrix,double (&angle)[4]);
     bool UpdateDevicePosition(const int device_id);
+
 };
 
 #endif
