@@ -95,7 +95,7 @@ sudo make install
 
 Check the [HTC_Vive_Tracker developer guidelines](https://dl.vive.com/Tracker/Guideline/HTC_Vive_Tracker(2018)_Developer+Guidelines_v1.0.pdf) for more information 
 
-The coordinate system by default is the following 
+The coordinate system **by default** is the following 
 
 
 ![htc_original_axis](/uploads/e937a55d83778901d9228423524b4c42/htc_original_axis.png)
