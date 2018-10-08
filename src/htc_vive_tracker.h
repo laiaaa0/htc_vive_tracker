@@ -34,7 +34,6 @@ struct Dimension {
 enum EventFlags {
 	BUTTONPRESS,
 	BUTTONUNPRESS
-		
 };
 
 enum ButtonFlags {
@@ -57,7 +56,7 @@ vr::k_EButton_System
 
 
 
-void PrintVec3(Vec3 vector_);
+void PrintVec3(const Vec3 & v);
 
 class CHtc_Vive_Tracker
     {
@@ -90,12 +89,6 @@ class CHtc_Vive_Tracker
     
     const uint32_t MAX_PULSE_DURATION = 3999;
 
-  public:
-  
-    //Constructor and destructor
-    CHtc_Vive_Tracker();
-    ~CHtc_Vive_Tracker();
-    
     //Device names
     static constexpr const char* NAME_HMD = "hmd";
     static constexpr const char* NAME_CONTROLLER = "controller";
@@ -103,6 +96,13 @@ class CHtc_Vive_Tracker
     static constexpr const char* NAME_TREFERENCE = "tracking_reference";
     static constexpr const char* NAME_NULL = "invalid";
 
+
+  public:
+  
+    //Constructor and destructor
+    CHtc_Vive_Tracker();
+    ~CHtc_Vive_Tracker();
+    
     //Initialize and shutdown functionalities
     bool InitializeVR(bool verbose);
     bool ShutDownVR();

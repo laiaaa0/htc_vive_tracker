@@ -22,7 +22,8 @@ void CHtc_Vive_Tracker::InitializeDeviceMap() {
 	}
 }
 
-void PrintVec3(Vec3 vector_) {
+
+void PrintVec3(const Vec3 & vector_) {
 	std::cout<<vector_.x<<" "<<vector_.y<<" "<<vector_.z<<std::endl;
 }
 // HtcViveTrackerAlgorithm Public API
@@ -42,13 +43,11 @@ bool CHtc_Vive_Tracker::InitializeVR(bool verbose) {
         }
 
         if (runtime_ok && hmd_present && er==vr::VRInitError_None) {
-
 		this->max_devices_ = vr::k_unMaxTrackedDeviceCount;
 		for (uint i = 0; i < this->max_devices_; ++i){
 			devices_names_.push_back("");
 			last_button_pressed_.push_back(vr::k_EButton_Max);
 		}
-
 		this->vr_chaperone_ = (vr::IVRChaperone *)vr::VR_GetGenericInterface(vr::IVRChaperone_Version, &er);
 		if (er == 0) {
 			if (this->verbose_) std::cout<<"Chaperone initialized correctly"<<std::endl;
@@ -143,13 +142,12 @@ std::vector<std::string> CHtc_Vive_Tracker::GetAllDeviceNames() {
 		}
 	}
 	return non_empty_device_names;
-
 }
 
 bool CHtc_Vive_Tracker::EventPolling() {
 	vr::VREvent_t event;
 	if (this->vr_system_->PollNextEvent(&event, sizeof(event))){
-		//std::cout<<this->vr_system_->GetEventTypeNameFromEnum((vr::EVREventType)event.eventType)<<std::endl;
+		std::cout<<this->vr_system_->GetEventTypeNameFromEnum((vr::EVREventType)event.eventType)<<std::endl;
 		switch (event.eventType){
 			case vr::VREvent_TrackedDeviceActivated:
 				this->AddNewDevice(event.trackedDeviceIndex);

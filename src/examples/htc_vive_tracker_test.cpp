@@ -35,15 +35,14 @@ void PrintAllDevicesInformation (CHtc_Vive_Tracker & vt){
 		double pose[3];
 		double quat[4];
 		if (vt.IsDeviceDetected(list_of_devices[i])){
-			
 			bool success = vt.GetDevicePoseQuaternion(list_of_devices[i],pose,quat);
 			Velocity velocity = vt.GetDeviceVelocity (list_of_devices[i]);
 			if (success){
 				std::cout<<list_of_devices[i]<<" Position"<<std::endl;
-				for (int i=0; i<3;++i) std::cout<<pose[i]<<" ";
+				for (int i=0; i<3; ++i) std::cout<<pose[i]<<" ";
 				std::cout<<std::endl;
 				std::cout<<list_of_devices[i]<<" Quaternion"<<std::endl;
-				for (int i=0; i<4;++i) std::cout<<quat[i]<<" ";
+				for (int i=0; i<4; ++i) std::cout<<quat[i]<<" ";
 				std::cout<<std::endl;
 				std::cout<<list_of_devices[i]<<" Linear Velocity"<<std::endl;
 				PrintVec3 (velocity.linear_velocity);
@@ -54,8 +53,6 @@ void PrintAllDevicesInformation (CHtc_Vive_Tracker & vt){
 				std::cout<<std::endl<<"**************************"<<std::endl;
 				}
 			} else std::cout<<list_of_devices[i]<<" not detected"<<std::endl;
-
-
 		}
 }
 int main(int argc, char *argv[])
@@ -82,8 +79,12 @@ int main(int argc, char *argv[])
 	if (vt.InitializeVR(verbose)){
 
 		
+        if(vt.GetAllDeviceNames().size()==1){
+            std::cout<<"No devices detected. Check link box are connected and devices are paired"<<std::endl;
+            return 0;
+        }
 		ShowDimensionsPlay(vt);
-		std::cout<<"Init done. Detected devices are :"<<std::endl;
+		std::cout<<"Init done."<<std::endl;
 		vt.PrintAllDetectedDevices();
 
 		if (verbose) {
@@ -100,6 +101,7 @@ int main(int argc, char *argv[])
 			if (vt.EventPolling()) {
 				std::cout<<"Last button pressed : "<<std::endl;
 				std::cout<<vt.GetLastButtonPressedString("tracker_1")<<" ";
+				std::cout<<vt.GetLastButtonPressedString("tracker_2")<<" ";
 				std::cout<<vt.GetLastButtonPressedString("controller_1")<<std::endl;
 				if (vt.GetLastButtonPressedEnum("tracker_1")==vr::k_EButton_ApplicationMenu or vt.GetLastButtonPressedEnum("controller_1") == vr::k_EButton_ApplicationMenu) button_menu_pressed = true;
 			}
