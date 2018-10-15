@@ -38,9 +38,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 4. Edit configuration files so that it works without the headset
 
     1. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/resources/settings/default.vrsettings ``` 
-    2. Search for the “requireHmd” key under “steamvr”, set the value of this key to “false”.
-    3. Search for the “forcedDriver” key under “steamvr”, set the value of this key to “null”.
-    4. Search for the “activateMultipleDrivers” key under “steamvr”, set the value of this key to “true”.
+        1. Search for the “requireHmd” key under “steamvr”, set the value of this key to “false”.
+        2. Search for the “forcedDriver” key under “steamvr”, set the value of this key to “null”.
+        3. Search for the “activateMultipleDrivers” key under “steamvr”, set the value of this key to “true”.
+    2. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/drivers/null/resources/settings/default.vrsettings```
+        1. Search for the "enable" key under "driver_null", set the value of this key to "true".
+        
 5. Opt-in to SteamVR Beta.
 
     1. Right click on SteamVR > Properties
