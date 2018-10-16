@@ -51,7 +51,7 @@ sudo dpkg -i steam_latest.deb
     2. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/drivers/null/resources/settings/default.vrsettings```
         1. Search for the "enable" key under "driver_null", set the value of this key to "true".
         
-6. Opt-in to SteamVR Beta.
+6. Activate the Beta SteamVR
 
     1. Go to LIBRARY -> TOOLs
     2. Right click on SteamVR > Properties
