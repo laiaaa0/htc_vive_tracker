@@ -61,8 +61,9 @@ sudo dpkg -i steam_latest.deb
 
 Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
 
-
 ```
+# install Vulkan library dependency
+sudo apt install libvulkan-dev
 git clone https://github.com/ValveSoftware/openvr.git
 cd openvr
 mkdir build
