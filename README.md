@@ -74,13 +74,8 @@ sudo make install
 
 Suggestion : Also install the headers automatically
 
-1. Edit openvr/CMakeLists.txt and add the following line
-
-    add_subdirectory(headers)   
-2. Create openvr/headers/CMakeLists.txt and add the following line
-
-    install(FILES openvr_capi.h openvr_driver.h openvr.h DESTINATION include)
-
+1. Edit openvr/src/CMakeLists.txt and add the following line at the end of it
+    install(FILES ${CMAKE_SOURCE_DIR}/headers/openvr.h ${CMAKE_SOURCE_DIR}/headers/openvr_capi.h DESTINATION include)
 
 * Install htc vive tracker
 
