@@ -40,7 +40,7 @@ sudo dpkg -i steam_latest.deb
 
     1. Open Steam.
     2. Go to LIBRARY>Tools
-    3. Right click SteamVR > Install
+    3. Right click SteamVR > Install Game ...
     
 4. Edit configuration files so that it works without the headset
 
