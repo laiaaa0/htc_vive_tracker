@@ -28,8 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 * Install dependencies (SteamVR)
 
 1. Create a steam account [here](https://store.steampowered.com/join/?)
-2. Download and install Steam [here](https://store.steampowered.com/about/)
-3. Download and install SteamVR
+2. Install python-apt and steam-launcher:
+```
+sudo apt install python-apt steam-launcher
+```
+3. Download and install Steam [here](https://store.steampowered.com/about/)
+4. Download and install SteamVR
 
     1. Open Steam.
     2. Go to LIBRARY>Tools
