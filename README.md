@@ -42,7 +42,7 @@ sudo dpkg -i steam_latest.deb
     2. Go to LIBRARY>Tools
     3. Right click SteamVR > Install Game ...
     
-4. Edit configuration files so that it works without the headset
+5. Edit configuration files so that it works without the headset
 
     1. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/resources/settings/default.vrsettings ``` 
         1. Search for the “requireHmd” key under “steamvr”, set the value of this key to “false”.
@@ -51,10 +51,11 @@ sudo dpkg -i steam_latest.deb
     2. Edit the file ``` ~/.steam/steam/steamapps/common/SteamVR/drivers/null/resources/settings/default.vrsettings```
         1. Search for the "enable" key under "driver_null", set the value of this key to "true".
         
-5. Opt-in to SteamVR Beta.
+6. Opt-in to SteamVR Beta.
 
-    1. Right click on SteamVR > Properties
-    2. BETAS tab > SteamVR beta update
+    1. Go to LIBRARY -> TOOLs
+    2. Right click on SteamVR > Properties
+    3. BETAS tab > SteamVR beta update
     
 * Install dependencies (OpenVR)
 
