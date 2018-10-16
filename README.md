@@ -68,7 +68,7 @@ git clone https://github.com/ValveSoftware/openvr.git
 cd openvr
 mkdir build
 cd build
-cmake ..
+cmake .. -DBUILD_SHARED=ON
 make
 sudo make install
 ```
