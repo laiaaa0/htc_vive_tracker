@@ -33,6 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 sudo apt install python-apt steam-launcher
 ```
 3. Download and install Steam [here](https://store.steampowered.com/about/)
+```
+sudo dpkg -i steam_latest.deb
+```
 4. Download and install SteamVR
 
     1. Open Steam.
