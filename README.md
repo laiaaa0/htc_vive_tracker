@@ -1,4 +1,4 @@
-### Readme
+# Readme
 
 Copyright (C) 2009-2010 Institut de Robòtica i Informàtica Industrial, CSIC-UPC.
 Author pmlab (pmlab@iri.upc.edu)
@@ -19,13 +19,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
-### Instalation instructions
+# Installation of dependencies
 
 * Is your PC Ready for HTC - VIVE? 
 
     Check it [here](https://www.vive.com/us/ready/)
 
-* Install dependencies (SteamVR)
+
+### SteamVR
+
 
 1. Create a steam account [here](https://store.steampowered.com/join/?)
 2. Install python-apt and steam-launcher:
@@ -56,13 +58,10 @@ sudo dpkg -i steam_latest.deb
     1. Go to LIBRARY -> TOOLs
     2. Right click on SteamVR > Properties
     3. BETAS tab > SteamVR beta update
-    
-* Install dependencies (OpenVR)
 
-Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
+### Vulkan
 
 ```
-# install Vulkan library dependency
 sudo apt install libvulkan-dev
 git clone https://github.com/ValveSoftware/openvr.git
 cd openvr
@@ -73,18 +72,25 @@ make
 sudo make install
 ```
 
-Suggestion : Also install the headers automatically
+    
+### OpenVR
+
+Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
+
+Also install the headers automatically
 
 1. Edit openvr/src/CMakeLists.txt and add the following line at the end of it
 
     install(FILES ${CMAKE_SOURCE_DIR}/headers/openvr.h ${CMAKE_SOURCE_DIR}/headers/openvr_capi.h DESTINATION include)
 
-* Install htc vive tracker
+
+# Installation instructions
 
 
-Clone this repository 
+* Clone this repository 
 
 ```
+git clone ssh://git@gitlab.iri.upc.edu:2202/labrobotica/drivers/htc_vive_tracker.git
 cd htc_vive_tracker
 mkdir build
 cd build
@@ -99,7 +105,7 @@ make
 sudo make install
 ```
 
-### FAQ
+## FAQ
 
 Check the [HTC_Vive_Tracker developer guidelines](https://dl.vive.com/Tracker/Guideline/HTC_Vive_Tracker(2018)_Developer+Guidelines_v1.0.pdf) for more information 
 
