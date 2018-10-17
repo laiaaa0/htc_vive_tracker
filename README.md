@@ -59,7 +59,7 @@ sudo dpkg -i steam_latest.deb
     2. Right click on SteamVR > Properties
     3. BETAS tab > SteamVR beta update
 
-### Vulkan
+### OpenVR
 
 ```
 sudo apt install libvulkan-dev
@@ -72,10 +72,6 @@ make
 sudo make install
 ```
 
-    
-### OpenVR
-
-Download and install openvr from this [link] (https://github.com/ValveSoftware/openvr)
 
 Also install the headers automatically
 
