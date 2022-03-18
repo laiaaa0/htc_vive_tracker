@@ -1,0 +1,33 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  build-linux:
+    machine:
+      image: ubuntu-2004:202201-02
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - checkout 
+      - run: 
+          name: Install dependencies
+          command: |
+            sudo apt-get install libopenvr-dev
+      - run:
+          name: Build with cmake
+          command: |
+            mkdir __build
+            cd __build
+            cmake ..
+            make
+            make install
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build-and-test:
+    jobs:
+      - build-linux
