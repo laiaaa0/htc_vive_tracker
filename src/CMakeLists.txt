@@ -2,20 +2,23 @@
 SET(sources htc_vive_tracker.cpp)
 # application header files
 SET(headers htc_vive_tracker.h)
-# locate the necessary dependencies
-# add the necessary include directories
-INCLUDE_DIRECTORIES(.)
+
 # create the shared library
 ADD_LIBRARY(htc_vive_tracker SHARED ${sources})
-set(LOCALPATH "/usr/local/")
+target_include_directories(htc_vive_tracker
+	PUBLIC
+	.)
 
-find_library(OPENVR_LIB openvr_api "${LOCALPATH}/lib/" NO_DEFAULT_PATH)
-message("Found libopenvr_api: ${OPENVR_LIB}")
-#include_directories(${OPENVR_INCLUDE_DIRS})
+find_library(OPENVR_LIB openvr_api REQUIRED)
+
+message(STATUS "Found libopenvr_api: ${OPENVR_LIB}")
 # link necessary libraries
 
-TARGET_LINK_LIBRARIES (htc_vive_tracker ${OPENVR_LIB})
-target_link_libraries(htc_vive_tracker ${CMAKE_DL_LIBS})
+TARGET_LINK_LIBRARIES (htc_vive_tracker 
+	PUBLIC 
+	${OPENVR_LIB}
+	${CMAKE_DL_LIBS}
+	)
 INSTALL(TARGETS htc_vive_tracker
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib/iridrivers

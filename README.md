@@ -19,7 +19,28 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
-# Installation of dependencies
+## Building instructions
+
+Install openvr
+```
+sudo apt-get install libopenvr-dev
+```
+If this command fails, jump to the OpenVR section in the readme
+
+
+Clone and build the repo
+
+```
+git clone https://github.com/laiaaa0/htc_vive_tracker.git
+cd htc_vive_tracker
+mkdir _build
+cd _build
+cmake ..
+make
+sudo make install
+```
+
+## Installation of dependencies
 
 * Is your PC Ready for HTC - VIVE? 
 
@@ -30,9 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
 1. Create a steam account [here](https://store.steampowered.com/join/?)
-2. Install python-apt and steam-launcher:
+2. Install python-apt and steam:
 ```
-sudo apt install python-apt steam-launcher
+sudo apt install python-apt steam
 ```
 3. Download and install Steam [here](https://store.steampowered.com/about/)
 ```
@@ -55,12 +76,19 @@ sudo dpkg -i steam_latest.deb
         
 6. Activate the Beta SteamVR
 
-    1. Go to LIBRARY -> TOOLs
-    2. Right click on SteamVR > Properties
-    3. BETAS tab > SteamVR beta update
+    1. Go to the SteamVR page
+    2. Select the cog icon on the left hand side and select Properties
+    3. On the BETAS tab, select SteamVR Beta Update
 
 ### OpenVR
 
+Only required if the following command fails
+
+```
+sudo apt-get install libopenvr-dev
+```
+
+You can install from source, however since February 2022 the master branch has been failing builds . Check [this](https://github.com/ValveSoftware/openvr/issues/1642) issue.
 ```
 sudo apt install libvulkan-dev
 git clone https://github.com/ValveSoftware/openvr.git
@@ -80,26 +108,15 @@ Also install the headers automatically
     install(FILES ${CMAKE_SOURCE_DIR}/headers/openvr.h ${CMAKE_SOURCE_DIR}/headers/openvr_capi.h DESTINATION include)
 
 
-# Installation instructions
+## Running
 
-
-* Clone this repository 
-
-```
-git clone ssh://git@gitlab.iri.upc.edu:2202/labrobotica/drivers/htc_vive_tracker.git
-cd htc_vive_tracker
-mkdir build
-cd build
-```
-
-* Compile and install library
-
+Launch SteamVR[beta] from steam, and run the first time setup when prompted.
+After everything is configured, execute the example running
 
 ```
-cmake ..
-make
-sudo make install
+./bin/htc_vive_tracker_test
 ```
+
 
 ## FAQ
 

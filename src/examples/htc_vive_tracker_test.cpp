@@ -1,5 +1,4 @@
 #include "htc_vive_tracker.h"
-#include <openvr.h>
 
 const std::string verbose_arg = "-v";
 const std::string events_arg = "-e";

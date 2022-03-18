@@ -8,7 +8,7 @@
 #include <math.h>       /* fmax */
 
 //Specific libraries
-#include <openvr.h>
+#include <openvr/openvr.h>
 
 struct Vec3 {
 	double x;

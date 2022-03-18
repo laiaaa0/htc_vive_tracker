@@ -10,8 +10,10 @@ CHtc_Vive_Tracker::~CHtc_Vive_Tracker() {
 
 void CHtc_Vive_Tracker::InitializeDeviceMap() {
 	int num_detected_devices = max_devices_;
-	if (this->verbose_) std::cout<<"Detected devices:"<<std::endl;	
-	std::string device_name;
+        if (this->verbose_){
+          std::cout << "Detected devices:" << std::endl;
+	}
+        std::string device_name;
 	for (int i = 0; i<num_detected_devices; ++i){
 		if (device_poses_[i].bDeviceIsConnected && device_poses_[i].bPoseIsValid){
 			device_name = this->SetDeviceName(i);
