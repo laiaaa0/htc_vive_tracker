@@ -19,6 +19,27 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
+# Building instructions
+
+Install openvr
+```
+sudo apt-get install libopenvr-dev
+```
+If this command fails, jump to the OpenVR section in the readme
+
+
+Clone and build the repo
+
+```
+git clone https://github.com/laiaaa0/htc_vive_tracker.git
+cd htc_vive_tracker
+mkdir _build
+cd _build
+cmake ..
+make
+sudo make install
+```
+
 # Installation of dependencies
 
 * Is your PC Ready for HTC - VIVE? 
@@ -61,6 +82,13 @@ sudo dpkg -i steam_latest.deb
 
 ### OpenVR
 
+Only required if the following command fails
+
+```
+sudo apt-get install libopenvr-dev
+```
+
+You can install from source, however since February 2022 the master branch has been failing builds . Check [this](https://github.com/ValveSoftware/openvr/issues/1642) issue.
 ```
 sudo apt install libvulkan-dev
 git clone https://github.com/ValveSoftware/openvr.git
@@ -80,26 +108,6 @@ Also install the headers automatically
     install(FILES ${CMAKE_SOURCE_DIR}/headers/openvr.h ${CMAKE_SOURCE_DIR}/headers/openvr_capi.h DESTINATION include)
 
 
-# Installation instructions
-
-
-* Clone this repository 
-
-```
-git clone ssh://git@gitlab.iri.upc.edu:2202/labrobotica/drivers/htc_vive_tracker.git
-cd htc_vive_tracker
-mkdir build
-cd build
-```
-
-* Compile and install library
-
-
-```
-cmake ..
-make
-sudo make install
-```
 
 ## FAQ
 
