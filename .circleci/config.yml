@@ -23,7 +23,7 @@ jobs:
             cd __build
             cmake ..
             make
-            make install
+            sudo make install
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
