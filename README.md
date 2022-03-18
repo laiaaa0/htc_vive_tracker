@@ -19,7 +19,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 
-# Building instructions
+## Building instructions
 
 Install openvr
 ```
@@ -40,7 +40,7 @@ make
 sudo make install
 ```
 
-# Installation of dependencies
+## Installation of dependencies
 
 * Is your PC Ready for HTC - VIVE? 
 
@@ -51,9 +51,9 @@ sudo make install
 
 
 1. Create a steam account [here](https://store.steampowered.com/join/?)
-2. Install python-apt and steam-launcher:
+2. Install python-apt and steam:
 ```
-sudo apt install python-apt steam-launcher
+sudo apt install python-apt steam
 ```
 3. Download and install Steam [here](https://store.steampowered.com/about/)
 ```
@@ -76,9 +76,9 @@ sudo dpkg -i steam_latest.deb
         
 6. Activate the Beta SteamVR
 
-    1. Go to LIBRARY -> TOOLs
-    2. Right click on SteamVR > Properties
-    3. BETAS tab > SteamVR beta update
+    1. Go to the SteamVR page
+    2. Select the cog icon on the left hand side and select Properties
+    3. On the BETAS tab, select SteamVR Beta Update
 
 ### OpenVR
 
@@ -107,6 +107,15 @@ Also install the headers automatically
 
     install(FILES ${CMAKE_SOURCE_DIR}/headers/openvr.h ${CMAKE_SOURCE_DIR}/headers/openvr_capi.h DESTINATION include)
 
+
+## Running
+
+Launch SteamVR[beta] from steam, and run the first time setup when prompted.
+After everything is configured, execute the example running
+
+```
+./bin/htc_vive_tracker_test
+```
 
 
 ## FAQ
